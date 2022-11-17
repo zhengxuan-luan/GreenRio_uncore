@@ -12,6 +12,7 @@ module testio_ma (
 	mem_if_resp_ready,
 	mem_if_resp
 );
+/* verilator lint_off CASEINCOMPLETE */
 	input wire rstn_i;
 	output wire test_intr;
 	input wire test_clk;
@@ -190,6 +191,7 @@ module testio_ma (
 			rff_cdcst <= 3'd0;
 		else
 			rff_cdcst <= next_cdcst;
+	/* verilator lint_off CASEINCOMPLETE */
 	always @(*) begin
 		next_cdcst = rff_cdcst;
 		case (rff_cdcst)
@@ -216,6 +218,7 @@ module testio_ma (
 					next_cdcst = 3'd0;
 		endcase
 	end
+	/* verilator lint_on CASEINCOMPLETE */
 	always @(*) begin
 		test_doen = 1'b1;
 		test_dout = 1'b1;
@@ -234,3 +237,5 @@ module testio_ma (
 	// assign resp_data = {{(N_DATA_BITS - rct_cfg_RCT_MEM_DATA_W){1'b0}}, mem_if_resp[31-:rct_cfg_RCT_MEM_DATA_W]};
 	assign resp_data = mem_if_resp[31:0];
 endmodule
+
+/* verilator lint_on CASEINCOMPLETE */

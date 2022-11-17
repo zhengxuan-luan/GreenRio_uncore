@@ -35,6 +35,7 @@ module soc_tb(
     output m4_ack,
     input testio_clk,
     input clk,
+    input rst,
     output clk4,
     output rst4
 );

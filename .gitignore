@@ -2,3 +2,6 @@ ISSCC.md
 FAQ.md
 Apply.md
 env.sh
+*.vcd
+build
+gmon.out

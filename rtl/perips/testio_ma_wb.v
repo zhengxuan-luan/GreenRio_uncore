@@ -92,7 +92,7 @@ module testio_ma_wb (
 	wire [BUS_WIDTH - 1:0] wbm_addr_o;
 	wire [BUS_WIDTH - 1:0] wbm_data_o;
 	wire [BUS_WIDTH - 1:0] wbm_data_i;
-	rct_m2w_bridge m2w_bridge_ti_ma_u(
+	m2w_bridge m2w_bridge_ti_ma_u(
 		.clk_i(wbm_clk_i),
 		.rstn_i(wbm_rst_n),
 		.mem_if_req_valid(ti_ma_mem_if_req_valid),

@@ -22,7 +22,8 @@ module crg(
     output domain4_clk_o,
     output domain4_rst_o
 );
-
+/* verilator lint_off LATCH */
+/* verilator lint_off UNOPTFLAT */
 reg domain1_clk_en, domain2_clk_en, domain3_clk_en, domain4_clk_en;
 reg clk1_latch, clk2_latch, clk3_latch, clk4_latch;
 always @(*) begin  //use latch to remove glitch
@@ -79,4 +80,6 @@ end
 
 assign crg_wbm_ack_o = wbm_crg_cyc_i && ack_ff;
 assign crg_wbm_rdata_o = {{24{1'b0}}, domain4_rst_r, domain3_rst_r, domain2_rst_r, domain1_rst_r, domain4_clk_en, domain3_clk_en, domain2_clk_en, domain1_clk_en};
+/* verilator lint_on LATCH */
+/* verilator lint_on UNOPTFLAT */
 endmodule

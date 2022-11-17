@@ -7,6 +7,15 @@
 #include "verilated_vcd_c.h"
 #include "Vsoc_tb.h"
 
+#define HALF_CYCLE 10
+#define CRG_CTRL_ADDR 0x2000400
+#define MTIMECMP_ADDR 0x2000500
+#define MTIME_ADDR 0x2000508
+#define MSIP_ADDR 0x2000510
+#define STIMECMP_ADDR 0x2000520
+#define STIME_ADDR 0x2000528
+#define SSIP_ADDR 0x2000530
+
 //mid: 1 core 2 caravel 3 testio(outside) 4 uart(outside)
 struct SOC {
     Vsoc_tb* logic;
@@ -71,6 +80,7 @@ void SOC::reset(){
 }
 
 void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
+    int time_limit = 0;
     switch(mid){
     case 1:
         logic->m1_cyc = 1;
@@ -79,7 +89,6 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
         logic->m1_wdata = wdata;
         logic->m1_sel = 15;
         logic->m1_addr = address;
-        int time_limit = 0;
         while(time_limit < 1000 && !logic->m1_ack){
             cycle();
             time_limit++;
@@ -93,6 +102,7 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
             printf("the process that core write data 0x%x to address 0x%x failed.\n", wdata, address);
             assert(0);
         }
+        break;
     case 2:
         logic->m2_cyc = 1;
         logic->m2_stb = 1;
@@ -100,7 +110,6 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
         logic->m2_wdata = wdata;
         logic->m2_sel = 15;
         logic->m2_addr = address;
-        int time_limit = 0;
         while(time_limit < 1000 && !logic->m2_ack){
             cycle();
             time_limit++;
@@ -122,7 +131,6 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
         logic->m3_wdata = wdata;
         logic->m3_sel = 15;
         logic->m3_addr = address;
-        int time_limit = 0;
         while(time_limit < 1000 && !logic->m3_ack){
             cycle();
             time_limit++;
@@ -148,7 +156,6 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
         logic->m4_wdata = wdata;
         logic->m4_sel = 15;
         logic->m4_addr = address;
-        int time_limit = 0;
         while(time_limit < 1000 && !logic->m4_ack){
             cycle();
             time_limit++;
@@ -170,20 +177,20 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
 }
 
 
-void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
+void SOC::master_read(uint32_t address, int mid){
+    int time_limit = 0;
     switch(mid){
     case 1:
         logic->m1_cyc = 1;
         logic->m1_stb = 1;
         logic->m1_we = 0;
         logic->m1_addr = address;
-        int time_limit = 0;
         while(time_limit < 1000 && !logic->m1_ack){
             cycle();
             time_limit++;
         }
         if(logic->m1_ack){
-            printf("the process that core read data from address 0x%x succeed, the value is 0x%x.\n", address, logic->rdata);
+            printf("the process that core read data from address 0x%x succeed, the value is 0x%x.\n", address, logic->m1_rdata);
             logic->m1_cyc = 0;
             logic->m1_stb = 0;
             cycle();
@@ -191,18 +198,18 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
             printf("the process that core read data from address 0x%x failed.\n", address);
             assert(0);
         }
+        break;
     case 2:
         logic->m2_cyc = 1;
         logic->m2_stb = 1;
         logic->m2_we = 0;
         logic->m2_addr = address;
-        int time_limit = 0;
         while(time_limit < 1000 && !logic->m2_ack){
             cycle();
             time_limit++;
         }
         if(logic->m2_ack){
-            printf("the process that caravel read data from address 0x%x succeed, the value is 0x%x.\n", address, logic->rdata);
+            printf("the process that caravel read data from address 0x%x succeed, the value is 0x%x.\n", address, logic->m2_rdata);
             logic->m2_cyc = 0;
             logic->m2_stb = 0;
             cycle();
@@ -216,13 +223,12 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
         logic->m3_stb = 1;
         logic->m3_we = 0;
         logic->m3_addr = address;
-        int time_limit = 0;
         while(time_limit < 1000 && !logic->m3_ack){
             cycle();
             time_limit++;
         }
         if(logic->m3_ack){
-            printf("the process that testio read data from address 0x%x succeed, the value is 0x%x.\n", address, logic->rdata);
+            printf("the process that testio read data from address 0x%x succeed, the value is 0x%x.\n", address, logic->m3_rdata);
             logic->m3_cyc = 0;
             logic->m3_stb = 0;
             cycle();
@@ -240,13 +246,12 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
         logic->m4_stb = 1;
         logic->m4_we = 0;
         logic->m4_addr = address;
-        int time_limit = 0;
         while(time_limit < 1000 && !logic->m4_ack){
             cycle();
             time_limit++;
         }
         if(logic->m4_ack){
-            printf("the process that uart receive data 0x%x succeed.\n", logic->rdata);
+            printf("the process that uart receive data 0x%x succeed.\n", logic->m4_rdata);
             logic->m4_cyc = 0;
             logic->m4_stb = 0;
             cycle();
@@ -269,11 +274,22 @@ void SOC::close(){
 }
 
 int main(){
-    SOC my_soc;
+    SOC soc;
     soc.init();
     soc.reset();
-
-    // soc.master_read();
-    
+    soc.master_read(CRG_CTRL_ADDR, 1); //read crg default value
+    soc.master_write(CRG_CTRL_ADDR, 0xff, 2);  //pull down reset for all perips and core
+    soc.master_write(CRG_CTRL_ADDR, 0x0f, 3); //complete reset
+    // start check clint
+    soc.master_read(MSIP_ADDR, 2);
+    soc.master_read(SSIP_ADDR, 3);
+    soc.master_read(MTIME_ADDR, 1);
+    soc.master_read(MTIMECMP_ADDR, 1);
+    soc.master_write(MTIMECMP_ADDR, 0x100, 2);
+    soc_master_write(MSIP_ADDR, 1, 3);
+    soc_master_write(SSIP_ADDR, 1, 1);
+    soc_master_write(MSIP_ADDR, 0, 1);
+    soc_master_write(SSIP_ADDR, 0, 1);
+    // ......
     soc.close();
 }

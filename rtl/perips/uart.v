@@ -1,4 +1,5 @@
 `include "perips_cfg.vh"
+`default_nettype wire
 
 module uart(
     `ifdef USE_POWER_PINS

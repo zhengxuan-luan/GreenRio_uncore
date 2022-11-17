@@ -113,7 +113,7 @@ wire [`WB_DAT_WIDTH-1:0]    ti_soc_rdata;
 //     .wbs_testio_rdata_i(ti_soc_rdata)
 // );
 
-rct_testio_ma_wb rct_testio_ma_wb(
+testio_ma_wb testio_ma_wb(
 	.clk_i(clk),    //perips clk
  	.rstn_i(rst),   //caravel reset 
 	.test_intr(),   //testio doesn't trigger test
