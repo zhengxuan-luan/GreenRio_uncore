@@ -4,7 +4,7 @@
 `define PERIPS_SIZE_WIDTH 1
 `define PERIPS_SIZE 2
 `define UART_CLK_FREQ 50_000_000
-
+// one cycle is 20ns
 // register address
 // CLINT
 `define MTIMECMP_ADDR 32'h0200_0500
