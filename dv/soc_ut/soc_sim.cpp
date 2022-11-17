@@ -100,7 +100,7 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
             cycle();
         } else if(time_limit == 1000){
             printf("the process that core write data 0x%x to address 0x%x failed.\n", wdata, address);
-            assert(0);
+            close();
         }
         break;
     case 2:
@@ -121,7 +121,7 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
             cycle();
         } else if(time_limit == 1000){
             printf("the process that caravel write data 0x%x to address 0x%x failed.\n", wdata, address);
-            assert(0);
+            close();
         }
         break;
     case 3:
@@ -142,7 +142,7 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
             cycle();
         } else if(time_limit == 1000){
             printf("the process that testio write data 0x%x to address 0x%x failed.\n", wdata, address);
-            assert(0);
+            close();
         }
         break;
     case 4:
@@ -167,7 +167,7 @@ void SOC::master_write(uint32_t address, uint32_t wdata, int mid){
             cycle();
         } else if(time_limit == 1000){
             printf("the process that uart send data 0x%x failed.\n", wdata);
-            assert(0);
+            close();
         }
         break;
     default:
@@ -196,7 +196,7 @@ void SOC::master_read(uint32_t address, int mid){
             cycle();
         } else if(time_limit == 1000){
             printf("the process that core read data from address 0x%x failed.\n", address);
-            assert(0);
+            close();
         }
         break;
     case 2:
@@ -215,7 +215,7 @@ void SOC::master_read(uint32_t address, int mid){
             cycle();
         } else if(time_limit == 1000){
             printf("the process that caravel read data from address 0x%x failed.\n", address);
-            assert(0);
+            close();
         }
         break;
     case 3:
@@ -234,7 +234,7 @@ void SOC::master_read(uint32_t address, int mid){
             cycle();
         } else if(time_limit == 1000){
             printf("the process that testio read data from address 0x%x failed.\n", address);
-            assert(0);
+            close();
         }
         break;
     case 4:
@@ -257,7 +257,7 @@ void SOC::master_read(uint32_t address, int mid){
             cycle();
         } else if(time_limit == 1000){
             printf("the process that uart receive data failed.\n");
-            assert(0);
+            close();
         }
         break;
     default:
@@ -271,9 +271,10 @@ void SOC::close(){
     delete logic;
     tfp->close();
     delete contextp;
+    exit(1);
 }
 
-int main(){
+int main(){   
     SOC soc;
     soc.init();
     soc.reset();
@@ -286,10 +287,12 @@ int main(){
     soc.master_read(MTIME_ADDR, 1);
     soc.master_read(MTIMECMP_ADDR, 1);
     soc.master_write(MTIMECMP_ADDR, 0x100, 2);
-    soc_master_write(MSIP_ADDR, 1, 3);
-    soc_master_write(SSIP_ADDR, 1, 1);
-    soc_master_write(MSIP_ADDR, 0, 1);
-    soc_master_write(SSIP_ADDR, 0, 1);
+    soc.master_write(MSIP_ADDR, 1, 3);
+    soc.master_write(SSIP_ADDR, 1, 1);
+    soc.master_write(MSIP_ADDR, 0, 1);
+    soc.master_write(SSIP_ADDR, 0, 1);
     // ......
+
     soc.close();
+    return 0;
 }
