@@ -44,6 +44,7 @@ the store buffer should have following functions:
 `include "./include/uop_encoding_pkg.sv"
 `endif //USE_VERILATOR
 /* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off WIDTH */
 module rvh_l1d_stb
   import riscv_pkg::*;
   import rvh_pkg::*;
@@ -522,6 +523,7 @@ module rvh_l1d_stb
 
   // s1.2 if st req hit: select the hit entry idx, merge and gen new stb entry to update stb
   // s1.2.0 upd stb select
+/* verilator lint_off VARHIDDEN */
   always_comb begin: comb_s1_upd_stb_entry_select
     upd_stb_entry_idx = '0;
     for(int i = 0; i < N_STB_ST_IN_PORT; i++) begin
@@ -532,6 +534,7 @@ module rvh_l1d_stb
       end
     end
   end
+/* verilator lint_on VARHIDDEN */
   
   generate
     for(i = 0; i < N_STB_ST_IN_PORT; i++) begin: gen_s1_upd_stb_entry_old
@@ -646,6 +649,7 @@ module rvh_l1d_stb
   logic [N_STB-1:0][$clog2(N_STB_ST_IN_PORT)-1:0] stb_input_port_idx_per_new_stb_entry;
   logic [N_STB-1:0][$clog2(N_STB_ST_IN_PORT)-1:0] stb_input_port_idx_per_upd_stb_entry;
 
+/* verilator lint_off VARHIDDEN */
   always_comb begin: comb_stb_input_port_idx_per_new_stb_entry
     stb_input_port_idx_per_new_stb_entry = '0;
     for(int i = 0; i < N_STB; i++) begin
@@ -667,6 +671,7 @@ module rvh_l1d_stb
       end
     end
   end
+/* verilator lint_on VARHIDDEN */
 
   // s1.3.3 generate stb_entry_nxt
   generate
@@ -826,6 +831,7 @@ module rvh_l1d_stb
       end
     end
   endgenerate
+/* verilator lint_off VARHIDDEN */
 
   // s2.1 compare the ld req byte mask against the hit stb entries found at s1
   // s2.1.0 select the hit stb entry
@@ -839,6 +845,7 @@ module rvh_l1d_stb
       end
     end
   end
+/* verilator lint_on VARHIDDEN */
 
   // s2.1.1 compare the ld req byte mask against the hit stb entries found at s1
   logic [N_STB_LD_IN_PORT-1:0][L1D_STB_DATA_WIDTH/8-1:0]  s2_ld_req_data_byte_mask_interleaved;
@@ -897,6 +904,7 @@ module rvh_l1d_stb
   // s2.2.1 if partial hit: ldq replay, set the stb entry evict_at_once bit
   logic[N_STB_LD_IN_PORT-1:0][N_STB-1:0]  stb_entry_evict_at_once_nxt_mid;
   logic[N_STB-1:0][N_STB_LD_IN_PORT-1:0]  stb_entry_evict_at_once_nxt_mid_trans;
+/* verilator lint_off VARHIDDEN */
   always_comb begin: comb_stb_entry_evict_at_once_nxt_mid
     for(int i = 0; i < N_STB_LD_IN_PORT; i++) begin
       stb_entry_evict_at_once_nxt_mid[i] = stb_entry_evict_at_once;
@@ -905,6 +913,7 @@ module rvh_l1d_stb
       end
     end
   end
+/* verilator lint_on VARHIDDEN */
 
   generate
     for(i = 0; i < N_STB_LD_IN_PORT; i++) begin: gen_stb_entry_evict_at_once_nxt_mid_trans
@@ -1096,6 +1105,7 @@ module rvh_l1d_stb
   end
 
   // output of fsm, stb evict output to l1d bank
+/* verilator lint_off VARHIDDEN */
   always_comb begin: comb_select_out_selected_stb_entry
     out_selected_stb_entry_valid  = 1'b0;
     out_selected_stb_entry        = '0;
@@ -1117,6 +1127,7 @@ module rvh_l1d_stb
       end
     end
   end
+/* verilator lint_on VARHIDDEN */
 
   // when ld req at stb ld pipe s1, the stb evict should not do if it is the same stb entry the ld req at s1 hit
   // when st req at stb ld pipe s0, the stb evict should not do if it is the same stb entry the ld req at s1 hit
@@ -1162,10 +1173,10 @@ module rvh_l1d_stb
     is_in_selected_evict_stb_evict_state  = '0;
     is_in_in_age_evict_stb_evict_state    = '0;
 
-    for(int i = N_STB_LD_IN_PORT; i < N_STB_LD_IN_PORT+N_STB_ST_IN_PORT; i++) begin
-      // stb_rob_wb_vld_o[i] = 1'b0;
-      // stb_rob_wb_rob_tag_o[i] = '0;
-    end
+    // for(int i = N_STB_LD_IN_PORT; i < N_STB_LD_IN_PORT+N_STB_ST_IN_PORT; i++) begin
+    //   // stb_rob_wb_vld_o[i] = 1'b0;
+    //   // stb_rob_wb_rob_tag_o[i] = '0;
+    // end
 
     case (stb_evict_state_q)
       IDLE: begin
@@ -1241,6 +1252,7 @@ module rvh_l1d_stb
     
     flush_req_rob_tag_nxt = '0;
     
+/* verilator lint_off VARHIDDEN */
     for(int i = N_STB_ST_IN_PORT-1; i >= 0; i--) begin
       if(ls_pipe_stb_st_req_vld_i[i] & ls_pipe_l1d_st_req_is_fence_i[i]) begin
         flush_req_rob_tag_nxt = ls_pipe_stb_st_req_rob_tag_i[i];
@@ -1248,6 +1260,7 @@ module rvh_l1d_stb
       end
     end
   end
+/* verilator lint_on VARHIDDEN */
 
   std_dffre
   #(.WIDTH(ROB_TAG_WIDTH))
@@ -1381,4 +1394,5 @@ module rvh_l1d_stb
 
 
 endmodule
+/* verilator lint_on WIDTH */
 /* verilator lint_on PINCONNECTEMPTY */

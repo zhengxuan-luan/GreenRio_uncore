@@ -143,7 +143,7 @@ const uint64_t WRITE_SEL_LOAD    = 0b10;
 const uint64_t WRITE_SEL_NEXT_PC = 0b11;
 
 
-const uint64_t LDU_OP_WIDTH = 4;
+const uint64_t LDU_OP_WIDTH = 3;
 const uint64_t LDU_LB = 0;
 const uint64_t LDU_LH = 1;
 const uint64_t LDU_LW = 2;

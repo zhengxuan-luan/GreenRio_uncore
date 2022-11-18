@@ -1,0 +1,29 @@
+Sat Nov 19 00:54:50 2022
+
+t 140:rcu req enque.		st-3	 @ 0x80009448	 ROB index: 0	 rd addr: 0	 delay: 3	 is fenced: false data: 238e1f2946e87ccd
+t 150:rcu req issued.		st-3	 @ 0x80009448	 ROB index: 0	 rd addr: 0	 delay: 3	 is fenced: false data: 238e1f2946e87ccd
+	t 180:rcu wakeup.		 @ 0x80009448	 rob: 0
+t 200:rcu req enque.		ld-2	 @ 0x800027f8	 ROB index: 1	 rd addr: 1	 delay: 4	 is fenced: false
+t 210:rcu req issued.		ld-2	 @ 0x800027f8	 ROB index: 1	 rd addr: 1	 delay: 4	 is fenced: false
+t 210:rcu req enque.		st-2	 @ 0x8000f928	 ROB index: 2	 rd addr: 0	 delay: 5	 is fenced: false data: 7fdcc2331befd79f
+t 220:rcu req issued.		st-2	 @ 0x8000f928	 ROB index: 2	 rd addr: 0	 delay: 5	 is fenced: false data: 7fdcc2331befd79f
+t 220:rcu req enque.		ld-5	 @ 0x80005008	 ROB index: 3	 rd addr: 2	 delay: 4	 is fenced: false
+	t 220:rcu resp recieved.		 @ 0x80009448	 rob: 0	 rd addr: 0	 data: 238e1f2946e87ccd
+t 220:rcu req deque.		@ 0x80009448	ROB index: 0	
+t 230:rcu req issued.		ld-5	 @ 0x80005008	 ROB index: 3	 rd addr: 2	 delay: 4	 is fenced: false
+t 260:rcu req enque.		st-3	 @ 0x8000a858	 ROB index: 4	 rd addr: 0	 delay: 1	 is fenced: false data: 6763845e75a2a8d4
+t 270:rcu req issued.		st-3	 @ 0x8000a858	 ROB index: 4	 rd addr: 0	 delay: 1	 is fenced: false data: 6763845e75a2a8d4
+t 270:rcu req enque.		st-3	 @ 0x80009eb0	 ROB index: 5	 rd addr: 0	 delay: 1	 is fenced: false data: 2ca886110836c40e
+	t 270:rcu wakeup.		 @ 0x8000f928	 rob: 2
+t 280:rcu req issued.		st-3	 @ 0x80009eb0	 ROB index: 5	 rd addr: 0	 delay: 1	 is fenced: false data: 2ca886110836c40e
+	t 290:rcu wakeup.		 @ 0x8000a858	 rob: 4
+t 300:rcu req enque.		st-3	 @ 0x80001a70	 ROB index: 6	 rd addr: 0	 delay: 4	 is fenced: false data: 3006c83e614fd4a1
+	t 300:rcu wakeup.		 @ 0x80009eb0	 rob: 5
+t 310:rcu req issued.		st-3	 @ 0x80001a70	 ROB index: 6	 rd addr: 0	 delay: 4	 is fenced: false data: 3006c83e614fd4a1
+t 320:rcu req enque.		st-1	 @ 0x8000c678	 ROB index: 7	 rd addr: 0	 delay: 4	 is fenced: false data: 2463b9ea5e884adc
+t 330:rcu req issued.		st-1	 @ 0x8000c678	 ROB index: 7	 rd addr: 0	 delay: 4	 is fenced: false data: 2463b9ea5e884adc
+t 350:rcu req enque.		ld-0	 @ 0x800042e8	 ROB index: 8	 rd addr: 3	 delay: 4	 is fenced: false
+	t 350:rcu wakeup.		 @ 0x80001a70	 rob: 6
+t 360:rcu req issued.		ld-0	 @ 0x800042e8	 ROB index: 8	 rd addr: 3	 delay: 4	 is fenced: false
+	t 370:rcu wakeup.		 @ 0x8000c678	 rob: 7
+t 390:rcu req enque.		ld-5	 @ 0x80001b18	 ROB index: 9	 rd addr: 4	 delay: 3	 is fenced: false

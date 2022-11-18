@@ -1,4 +1,6 @@
+/* verilator lint_off WIDTH */
 module rvh_itlb #(
+/* verilator lint_off VARHIDDEN */
     parameter TRANSLATE_WIDTH = 1,
     parameter ENTRY_COUNT = 32,
     parameter TRANS_ID_WIDTH = 3,
@@ -10,6 +12,7 @@ module rvh_itlb #(
     localparam PAGE_LVL_WIDTH = $clog2(VPN_WIDTH / 9),
     localparam PPN_WIDTH = PADDR_WIDTH - 12,
     localparam MODE_WIDTH = 4
+/* verilator lint_on VARHIDDEN */
 ) (
     input [1:0] priv_lvl_i,
     // mstatus
@@ -67,6 +70,7 @@ module rvh_itlb #(
   genvar lane;
   genvar macro;
 
+/* verilator lint_off VARHIDDEN */
   localparam HIGHEST_PAGE_LVL = VPN_WIDTH / 9;
   // Mode
   localparam MODE_BARE = 0;
@@ -91,14 +95,15 @@ module rvh_itlb #(
   localparam PMP_ACCESS_TYPE_W = 1;
   localparam PMP_ACCESS_TYPE_X = 2;
 
+/* verilator lint_on VARHIDDEN */
   function automatic [VPN_WIDTH-1:0] gen_page_vpn_mask;
-    input [MODE_WIDTH-1:0] satp_mode_i;
+    input [MODE_WIDTH-1:0] gen_page_vpn_mask_satp_mode_i;
     input [PAGE_LVL_WIDTH-1:0] page_lvl_i;
     integer i;
     reg [HIGHEST_PAGE_LVL-1:0] satp_mode_mask;
     reg [HIGHEST_PAGE_LVL-1:0] vpn_segment_en_mask;
     begin
-      case (satp_mode_i)
+      case (gen_page_vpn_mask_satp_mode_i)
         MODE_SV39: satp_mode_mask = {{SV39_LEVELS_DIFF{1'b0}}, {SV39_LEVELS{1'b1}}};
         MODE_SV48: satp_mode_mask = {{SV48_LEVELS_DIFF{1'b0}}, {SV48_LEVELS{1'b1}}};
         MODE_SV57: satp_mode_mask = {{SV57_LEVELS_DIFF{1'b0}}, {SV57_LEVELS{1'b1}}};
@@ -724,3 +729,4 @@ module rvh_itlb #(
   endgenerate
 
 endmodule
+/* verilator lint_on WIDTH */

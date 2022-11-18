@@ -1,3 +1,4 @@
+/* verilator lint_off WIDTH */
 module rrv64_generic_ram
 #(
   parameter ADDR_BITS   = 4,
@@ -77,3 +78,4 @@ module rrv64_generic_ram
   assign  rd_o = rdata_reg;
 
   endmodule
+/* verilator lint_on WIDTH */

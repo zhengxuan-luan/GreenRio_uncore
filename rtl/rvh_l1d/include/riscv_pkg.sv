@@ -3,6 +3,7 @@
 `ifdef USE_VERILATOR
 `include "./rvh_pkg.sv"
 `endif //USE_VERILATOR
+/* verilator lint_off WIDTH */
 
 package riscv_pkg;
 
@@ -479,5 +480,6 @@ package riscv_pkg;
     localparam logic [CSR_ADDR_WIDTH-1:0] CSR_SATP = 12'h180;
 
 endpackage
+/* verilator lint_on WIDTH */
 
 `endif

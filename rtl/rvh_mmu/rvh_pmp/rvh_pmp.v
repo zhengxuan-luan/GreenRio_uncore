@@ -1,10 +1,13 @@
+/* verilator lint_off WIDTH */
 module rvh_pmp #(
+/* verilator lint_off VARHIDDEN */
     parameter PMP_ENTRY_COUNT = 64,
     parameter PMPCFG_ENTRY_COUNT = 8,
     parameter PADDR_WIDTH = 56,
     parameter PMPADDR_ID_WIDTH = $clog2(PMP_ENTRY_COUNT),
     parameter PMPCFG_ID_WIDTH = $clog2(PMPCFG_ENTRY_COUNT),
     parameter INPUT_REGISTER = 0
+/* verilator lint_on VARHIDDEN */
 ) (
     // Priv level
     input [1:0] priv_lvl_i,
@@ -27,9 +30,11 @@ module rvh_pmp #(
     input rstn
 );
 
+/* verilator lint_off VARHIDDEN */
   localparam PRIV_LVL_M = 3;
   localparam PRIV_LVL_S = 1;
   localparam PRIV_LVL_U = 0;
+/* verilator lint_on VARHIDDEN */
 
   genvar macro;
 
@@ -150,5 +155,6 @@ module rvh_pmp #(
   endgenerate
 
 
+/* verilator lint_on WIDTH */
 
 endmodule

@@ -5,6 +5,7 @@
 `include "./include/uop_encoding_pkg.sv"
 `endif //USE_VERILATOR
 /* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off WIDTH */
 module rvh_l1d_ptw_replay_buffer
   import riscv_pkg::*;
   import rvh_pkg::*;
@@ -124,4 +125,5 @@ assign ptw_walk_replay_req_paddr_o  = ptw_req_buffer.paddr;
 `endif
 
 endmodule
+/* verilator lint_on WIDTH */
 /* verilator lint_on PINCONNECTEMPTY */

@@ -1,5 +1,6 @@
 `ifndef __SELECT_TWO_FROM_N_VALID_SV__
 `define __SELECT_TWO_FROM_N_VALID_SV__
+/* verilator lint_off WIDTH */
 module select_two_from_n_valid
 #(
     parameter int unsigned SEL_WIDTH = 8,
@@ -59,4 +60,5 @@ assign first_id_o     = first_id_mid;
 assign second_id_o    = second_id_mid_comp;
 
 endmodule
+/* verilator lint_on WIDTH */
 `endif

@@ -1,4 +1,5 @@
 module rvh_mmu #(
+/* verilator lint_off VARHIDDEN */
     parameter PTW_ID_WIDTH = 1,
     parameter TRANS_ID_WIDTH = 3,
     parameter PADDR_WIDTH = 56,
@@ -13,6 +14,7 @@ module rvh_mmu #(
     localparam PTE_WIDTH = 64,
     localparam ASID_WIDTH = 16,
     localparam MODE_WIDTH = 4
+/* verilator lint_on VARHIDDEN */
 ) (
     // priv lvl
     input [1:0] priv_lvl_i,
@@ -102,10 +104,12 @@ module rvh_mmu #(
     $dumpflush;
     end
 
+/* verilator lint_off VARHIDDEN */
   // Access type
   localparam PMP_ACCESS_TYPE_R = 0;
   localparam PMP_ACCESS_TYPE_W = 1;
   localparam PMP_ACCESS_TYPE_X = 2;
+/* verilator lint_on VARHIDDEN */
 
   // Request Arbitiration
   wire dtlb_miss_request;

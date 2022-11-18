@@ -5,6 +5,7 @@
 `include "./include/uop_encoding_pkg.sv"
 `endif //USE_VERILATOR
 /* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off WIDTH */
 module rvh_l1d_mlfb
     import rvh_pkg::*;
     import rvh_l1d_pkg::*;
@@ -487,3 +488,4 @@ assign l1d_l2_rd_resp_ready = 1'b1;
 // assign mlfb_head_buf_valid          = head_buf_valid;
 endmodule
 /* verilator lint_on PINCONNECTEMPTY */
+/* verilator lint_on WIDTH */

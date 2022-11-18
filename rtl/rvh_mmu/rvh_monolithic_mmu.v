@@ -1,4 +1,5 @@
 module rvh_monolithic_mmu #(
+/* verilator lint_off VARHIDDEN */
     parameter XLEN = 64,
     parameter PTW_ID_WIDTH = 1,
     parameter TRANS_ID_WIDTH = 3,
@@ -28,6 +29,7 @@ module rvh_monolithic_mmu #(
     parameter ITLB_TRANSLATE_WIDTH = 1,
     parameter ITLB_ENTRY_COUNT = 32,
     parameter ITLB_TRANS_ID_WIDTH = 3
+/* verilator lint_on VARHIDDEN */
 ) (
     // priv lvl
     input       [                 1:0]                  priv_lvl_i,

@@ -69,7 +69,7 @@ import rvh_l1d_pkg::*;
 genvar i;
 
 typedef enum logic[2:0] {
-  IDLE,
+  AMO_FSM_IDLE,
   FLUSH_STB_1,
   REQ_BANK_SEND,
   FLUSH_STB_2,
@@ -213,7 +213,7 @@ always_comb begin
   send_amo_req_vld        = 1'b0;
   waiting_for_amo_resp    = 1'b0;
   case(amo_ctrl_fsm_state_q)
-    IDLE: begin
+    AMO_FSM_IDLE: begin
       in_amo_state_o  = 1'b0;
       if(receive_amo_req_hsk) begin // receive a amo req
         amo_ctrl_fsm_state_d    = FLUSH_STB_1;
@@ -246,12 +246,12 @@ always_comb begin
     REQ_BANK_WAIT: begin
       waiting_for_amo_resp = 1'b1;
       if(bank_amo_resp_vld) begin
-        amo_ctrl_fsm_state_d    = IDLE;
+        amo_ctrl_fsm_state_d    = AMO_FSM_IDLE;
         amo_ctrl_fsm_state_ena  = 1'b1;
       end
     end
     default: begin
-      amo_ctrl_fsm_state_d    = IDLE;
+      amo_ctrl_fsm_state_d    = AMO_FSM_IDLE;
       amo_ctrl_fsm_state_ena  = 1'b1;
     end
   endcase
@@ -275,7 +275,7 @@ U_STA_L1D_AMO_CTRL_STATE_REG
 (
   .clk(clk),
   .rstn(rst),
-  .rst_val(IDLE),
+  .rst_val(AMO_FSM_IDLE),
   .en(amo_ctrl_fsm_state_ena),
   .d(amo_ctrl_fsm_state_d),
   .q(amo_ctrl_fsm_state_q)

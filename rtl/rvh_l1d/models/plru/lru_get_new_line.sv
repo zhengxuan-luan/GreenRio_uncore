@@ -5,6 +5,7 @@
 // Date         : 2021-09-26 20:19:13
 // Description  : 
 //================================================
+/* verilator lint_off WIDTH */
 module lru_get_new_line
 #(
     parameter   NCACHELINE  = 8,
@@ -34,3 +35,4 @@ module lru_get_new_line
         new_lru = tmp;
     end
 endmodule
+/* verilator lint_on WIDTH */

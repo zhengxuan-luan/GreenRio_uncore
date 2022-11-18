@@ -216,7 +216,7 @@ parameter XLEN_M_PCWIDTH = XLEN - PC_WIDTH;
 // MMU 
 parameter TRANSLATE_WIDTH  = 1;
 
-parameter PMP_ACCESS_TYPE_WIDTH  = 1;
+parameter PMP_ACCESS_TYPE_WIDTH  = 2;
 parameter PMP_ACCESS_TYPE_R = 0;
 parameter PMP_ACCESS_TYPE_W = 1;
 parameter PMP_ACCESS_TYPE_X = 2;
@@ -236,7 +236,7 @@ parameter WRITE_SEL_CSR     = 2'b01;
 parameter WRITE_SEL_LOAD    = 2'b10;
 parameter WRITE_SEL_NEXT_PC = 2'b11;
 
-parameter LDU_OP_WIDTH = 4;
+parameter LDU_OP_WIDTH = 3;
 parameter LDU_LB = 0;
 parameter LDU_LH = 1;
 parameter LDU_LW = 2;

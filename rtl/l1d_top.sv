@@ -72,7 +72,6 @@ localparam REQ_ENQUE_BASE_DELAY = 100;
 localparam REQ_ENQUE_MAX_DELAY = 1;
 
 
-
 //                                                      
 // <> PRF                                                       
 wire                                                                                                lsu_rcu_prf_wb_vld;
@@ -377,7 +376,7 @@ rvh_l1d l1d(
     .ls_pipe_l1d_ld_req_opcode_i({{LDU_OP_WIDTH{1'b0}}, lsu_l1d_ld_req_opcode}),
     .ls_pipe_l1d_ld_req_index_i({{L1D_INDEX_WIDTH{1'b0}}, lsu_l1d_ld_req_index}), //
     .ls_pipe_l1d_ld_req_offset_i({{L1D_OFFSET_WIDTH{1'b0}}, lsu_l1d_ld_req_offset}), //
-    .ls_pipe_l1d_ld_req_vtag_i({{L1D_TAG_WIDTH{1'b0}}, lsu_l1d_ld_req_vtag}), // vtag
+    .ls_pipe_l1d_ld_req_vtag_i({{L1D_TAG_WIDTH{1'b0}}, {{(L1D_TAG_WIDTH - VIRTUAL_ADDR_TAG_LEN){1'b0}},lsu_l1d_ld_req_vtag}}), // vtag
     .ls_pipe_l1d_ld_req_rdy_o(l1d_lsu_ld_req_rdy),
 
     // LS Pipe -> D$ : DTLB response
@@ -485,20 +484,20 @@ rvh_l1d l1d(
 );
 
 
-assign dtlb_translate_req_vld = lsu_dtlb_iss_vld;
-assign dtlb_translate_req_access_type = lsu_dtlb_iss_type;
-assign dtlb_translate_req_vpn = lsu_dtlb_iss_vtag;
-assign dtlb_lsu_rdy = dtlb_translate_req_rdy;
-assign dtlb_lsu_vld = dtlb_translate_resp_vld; // should be the lsu_dtlb_iss_vld_o in last cycle
-assign dtlb_lsu_hit = dtlb_translate_resp_hit;
-assign dtlb_lsu_ptag = dtlb_translate_resp_ppn;
-assign dtlb_lsu_exception_vld = dtlb_translate_resp_excp_vld;
-assign dtlb_lsu_ecause = dtlb_translate_resp_excp_cause;
-assign ls_pipe_l1d_dtlb_resp_vld = dtlb_translate_resp_vld;
-assign ls_pipe_l1d_dtlb_resp_ppn = dtlb_translate_resp_ppn;
-assign ls_pipe_l1d_dtlb_resp_excp_vld = dtlb_translate_resp_excp_vld;
-assign ls_pipe_l1d_dtlb_resp_hit = dtlb_translate_resp_hit;
-assign ls_pipe_l1d_dtlb_resp_miss = dtlb_translate_resp_miss;
+assign dtlb_translate_req_vld[0] = lsu_dtlb_iss_vld;
+assign dtlb_translate_req_access_type[0] = lsu_dtlb_iss_type;
+assign dtlb_translate_req_vpn[0] = lsu_dtlb_iss_vtag;
+assign dtlb_lsu_rdy = dtlb_translate_req_rdy[0];
+assign dtlb_lsu_vld = dtlb_translate_resp_vld[0]; // should be the lsu_dtlb_iss_vld_o in last cycle
+assign dtlb_lsu_hit = dtlb_translate_resp_hit[0];
+assign dtlb_lsu_ptag = dtlb_translate_resp_ppn[0];
+assign dtlb_lsu_exception_vld = dtlb_translate_resp_excp_vld[0];
+assign dtlb_lsu_ecause = dtlb_translate_resp_excp_cause[0][EXCEPTION_CAUSE_WIDTH - 1 : 0]; // FIXME
+assign ls_pipe_l1d_dtlb_resp_vld = dtlb_translate_resp_vld[0];
+assign ls_pipe_l1d_dtlb_resp_ppn = dtlb_translate_resp_ppn[0];
+assign ls_pipe_l1d_dtlb_resp_excp_vld = dtlb_translate_resp_excp_vld[0];
+assign ls_pipe_l1d_dtlb_resp_hit = dtlb_translate_resp_hit[0];
+assign ls_pipe_l1d_dtlb_resp_miss = dtlb_translate_resp_miss[0];
 rvh_monolithic_mmu #(
     .PADDR_WIDTH(PHYSICAL_ADDR_LEN)
 ) mmu
@@ -586,6 +585,10 @@ rvh_monolithic_mmu #(
     .clk(clk),
     .rstn(~rst)
 );
+
+
+
+
 // inner_ebi #(
 //   .PADDR_WIDTH(PHYSICAL_ADDR_LEN)
 // )inner_ebi_u(

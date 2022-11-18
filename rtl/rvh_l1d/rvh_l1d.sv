@@ -5,6 +5,7 @@
 `include "./include/uop_encoding_pkg.sv"
 `endif //USE_VERILATOR
 /* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off WIDTH */
 module rvh_l1d
     import rvh_pkg::*;
     import riscv_pkg::*;
@@ -411,6 +412,7 @@ logic [L1D_BANK_ID_NUM-1:0]                                     stb_l1d_bank_ld_
 logic [L1D_BANK_ID_NUM-1:0][XLEN-1:0]                           stb_l1d_bank_ld_bypass_data;
 
 // stb load bypass -> l1d bank
+/* verilator lint_off VARHIDDEN */
 always_comb begin: comb_stb_l1d_arb_bank_id_mask
   stb_l1d_arb_bank_id_mask = '0;
   for(int i = 0; i < LSU_ADDR_PIPE_COUNT; i++) begin
@@ -419,6 +421,7 @@ always_comb begin: comb_stb_l1d_arb_bank_id_mask
     end
   end
 end
+/* verilator lint_on VARHIDDEN */
 
 generate
   for(i = 0; i < LSU_ADDR_PIPE_COUNT; i++) begin: gen_stb_l1d_bank_ld_bypass_valid_per_bank
@@ -802,6 +805,7 @@ in_pipe_bank_id_t [LSU_ADDR_PIPE_COUNT-1:0] s2_ld_bank_id;
   //   end
   // end
 `else
+/* verilator lint_off VARHIDDEN */
   logic [LSU_ADDR_PIPE_COUNT-1:0] l1d_ls_pipe_ld_replay_valid_mid;
   always_comb begin
     l1d_ls_pipe_ld_replay_valid_mid = '0;
@@ -812,6 +816,7 @@ in_pipe_bank_id_t [LSU_ADDR_PIPE_COUNT-1:0] s2_ld_bank_id;
     end
   end
   assign l1d_ls_pipe_ld_replay_valid_o = l1d_ls_pipe_ld_replay_valid_mid | stb_l1d_ld_replay_vld;
+/* verilator lint_on VARHIDDEN */
 `endif
 
 // lsu -> l1d kill at s2
@@ -830,11 +835,13 @@ in_pipe_bank_id_t [LSU_ADDR_PIPE_COUNT-1:0] s2_ld_bank_id;
   
   always_comb begin: comb_l1d_arb_bank_ld_kill_resp_mid
     l1d_arb_bank_ld_kill_resp_mid = '0;
+/* verilator lint_off VARHIDDEN */
     for(int i = 0; i < LSU_ADDR_PIPE_COUNT; i++) begin
       if(s2_ld_bank_id[i] == 0) begin
         l1d_arb_bank_ld_kill_resp_mid[0][i] = ls_pipe_l1d_kill_resp_i[i] | stb_l1d_ld_replay_vld[i];
       end
     end
+/* verilator lint_on VARHIDDEN */
   end
   
   generate
@@ -1655,5 +1662,6 @@ always @(posedge clk) begin
 end
 `endif // LOG_LV2
 endmodule : rvh_l1d
+/* verilator lint_on WIDTH */
 /* verilator lint_on PINCONNECTEMPTY */
 

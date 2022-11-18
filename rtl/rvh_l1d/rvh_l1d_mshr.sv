@@ -9,6 +9,7 @@
 `include "./include/uop_encoding_pkg.sv"
 `endif //USE_VERILATOR
 /* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off WIDTH */
 module rvh_l1d_mshr
   import rvh_l1d_pkg::*;
 #(
@@ -188,6 +189,7 @@ module rvh_l1d_mshr
   assign mlfb_mshr_dealloc_ready_o = 1'b1;
   always_comb begin
     mshr_bank_valid_nxt = mshr_bank_valid;
+/* verilator lint_off VARHIDDEN */
     for (int i=0; i<N_MSHR; i++) begin
         mshr_bank_valid_set_nxt[i] = new_mshr_valid_i & (new_mshr_id_i == N_MSHR_W'(i));
         mshr_bank_valid_clr_nxt[i] = mlfb_mshr_dealloc_valid_i & (mlfb_mshr_dealloc_idx_i[N_MSHR_W-1:0] == N_MSHR_W'(i));
@@ -195,6 +197,7 @@ module rvh_l1d_mshr
         mshr_bank_valid_nxt[i] = (mshr_bank_valid[i] | mshr_bank_valid_set_nxt[i]) & ~mshr_bank_valid_clr_nxt[i];  // read/write miss with clean/dirty
         mshr_bank_valid_ena[i] = mshr_bank_valid_set_nxt[i] | mshr_bank_valid_clr_nxt[i];
     end
+/* verilator lint_on VARHIDDEN */
   end
 
   //==========================================================
@@ -221,6 +224,7 @@ module rvh_l1d_mshr
     else $fatal("mshr: set and clr no_resp at the same cycle for a load req");
 `endif
 
+/* verilator lint_off VARHIDDEN */
   always_comb begin
     for(int i = 0; i < N_MSHR; i++) begin
       mshr_bank_no_resp_nxt[i] = mshr_bank_no_resp[i];
@@ -229,6 +233,7 @@ module rvh_l1d_mshr
       end
     end
   end
+/* verilator lint_on VARHIDDEN */
 
   generate
     for(i = 0; i < N_MSHR; i++) begin: gen_mshr_bank_no_resp
@@ -245,11 +250,12 @@ module rvh_l1d_mshr
     end
   endgenerate
 
-`ifndef SYNTHESIS
-  assert property(@(posedge clk)disable iff(~rst) ((mshr_bank_sent_nxt_clr & mshr_bank_sent_nxt_set) == '0))
-    else $fatal("mshr: set and clr mshr sent at the same cycle for a load req");
-`endif
+// `ifndef SYNTHESIS
+//   assert property(@(posedge clk)disable iff(~rst) ((mshr_bank_sent_nxt_clr & mshr_bank_sent_nxt_set) == '0))
+//     else $fatal("mshr: set and clr mshr sent at the same cycle for a load req");
+// `endif
 
+/* verilator lint_off VARHIDDEN */
   always_comb begin
     for(int i = 0; i < N_MSHR; i++) begin
       mshr_bank_sent_nxt[i] = mshr_bank_sent[i];
@@ -258,6 +264,7 @@ module rvh_l1d_mshr
       end
     end
   end
+/* verilator lint_on VARHIDDEN */
 
   generate
     for(i = 0; i < N_MSHR; i++) begin: gen_mshr_bank_sent
@@ -277,5 +284,6 @@ module rvh_l1d_mshr
   assign mshr_bank_no_resp_o  = mshr_bank_no_resp;
   assign mshr_bank_sent_o     = mshr_bank_sent;
 
+/* verilator lint_on WIDTH */
 endmodule
 /* verilator lint_on PINCONNECTEMPTY */

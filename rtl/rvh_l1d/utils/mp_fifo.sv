@@ -1,6 +1,7 @@
 `ifndef __MP_FIFO_SV__
 `define __MP_FIFO_SV__
 
+/* verilator lint_off WIDTH */
 module mp_fifo
 #(
     parameter type payload_t = logic[3:0],
@@ -87,5 +88,6 @@ module mp_fifo
     );
     
 endmodule : mp_fifo
+/* verilator lint_on WIDTH */
 
 `endif

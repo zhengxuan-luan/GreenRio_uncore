@@ -5,6 +5,7 @@
 `include "./include/uop_encoding_pkg.sv"
 `endif //USE_VERILATOR
 /* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off WIDTH */
 module rvh_l1d_lsu_hit_resp
     import riscv_pkg::*;
     import rvh_pkg::*;
@@ -126,4 +127,5 @@ L1D_RESP_OH_MUX
 
 
 endmodule
+/* verilator lint_on WIDTH */
 /* verilator lint_on PINCONNECTEMPTY */

@@ -34,6 +34,12 @@ void FakeMemory::w_vld(const bool& vld){
 void FakeMemory::w_req(const axi_w_req& w){
     _w_req = w;
 }
+void FakeMemory::b_rdy(const bool & rdy){
+    _b_rdy = rdy;
+}
+void FakeMemory::r_rdy(const bool & rdy){
+    _r_rdy = rdy;
+}
 bool FakeMemory::r_vld() const{
     return _r_vld;
 }
@@ -46,6 +52,9 @@ bool FakeMemory::b_vld() const{
 axi_b_resp FakeMemory::b_resp() const{
     return _b_resp;
 }
+uint64_t FakeMemory::visit_time() const{
+    return _visit_time;
+}
 void FakeMemory::eval(){
     // enque req
     if(_aw_vld){
@@ -54,6 +63,11 @@ void FakeMemory::eval(){
         req.aw = _aw_req;
         req.delay = MEM_BASE_DELAY + random() %  MEM_MAX_DELAY;
         _req_wait_q->push_back(req);
+#ifdef LOG_ENABLE
+        LOG << "t " << std::dec << TIME << ":axi mem aw req recieved.\t\t"
+            << "@ 0x" << std::hex  << req.aw.awaddr << "\t";
+        LOG << std::endl;
+#endif // LOG_ENABLE
     }
     if(_ar_vld){
         mem_req req;
@@ -61,6 +75,11 @@ void FakeMemory::eval(){
         req.ar = _ar_req;
         req.delay = MEM_BASE_DELAY + random() %  MEM_MAX_DELAY;
         _req_wait_q->push_back(req);
+#ifdef LOG_ENABLE
+        LOG << "t " << std::dec << TIME << ":axi mem ar req recieved.\t\t"
+            << "@ 0x" << std::hex  << req.ar.araddr << "\t";
+        LOG << std::endl;
+#endif // LOG_ENABLE
     }
     if(_w_vld){
         bool flag = 0;
@@ -119,6 +138,13 @@ void FakeMemory::eval(){
                     }
                     resp.r[i].rdata= data;
                     resp.r_vld_num ++;
+#ifdef LOG_ENABLE
+                    LOG << "t " << std::dec << TIME << ":axi mem r resp recieved.\t\t";
+                    LOG << "data:";
+                    for(uint32_t i = 0; i < BURST_NUM; i ++)
+                        LOG << std::hex  << resp.r[BURST_NUM - i - 1].rdata << " ";
+                    LOG << std::endl;
+#endif // LOG_ENABLE
                 }
             }
             else{
@@ -134,6 +160,14 @@ void FakeMemory::eval(){
                         }
                     }
                 }
+#ifdef LOG_ENABLE
+                    LOG << "t " << std::dec << TIME << ":axi mem w wb.\t\t";
+                    LOG << "@ :" << std::hex << req.aw.awaddr;
+                    LOG << "data:";
+                    for(uint32_t i = 0; i < BURST_NUM; i ++)
+                        LOG << std::hex << resp.r[BURST_NUM - i - 1].rdata << " ";
+                    LOG << std::endl;
+#endif // LOG_ENABLE
                 resp.b_vld = 1;
                 resp.b.bid = req.aw.awid;
             }
@@ -148,12 +182,14 @@ void FakeMemory::eval(){
         if(_resp_q->front().b_vld){
             _b_vld = 1;
             _b_resp = _resp_q->front().b;
-            _resp_q->pop_front();
+            if(_b_rdy)
+                _resp_q->pop_front();
         }
         if((_resp_q->front().r_vld_num == BURST_NUM) || _r_resp_on_flight){
             _r_vld = 1;
             _r_resp = _resp_q->front().r[BURST_NUM - _resp_q->front().r_vld_num];
-            _resp_q->front().r_vld_num --;
+            if(_r_rdy)
+                _resp_q->front().r_vld_num --;
             if(_resp_q->front().r_vld_num == 0){
                 _r_resp_on_flight = 0;
                 _resp_q->pop_front();

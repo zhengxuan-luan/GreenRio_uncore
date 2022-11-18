@@ -1,6 +1,7 @@
 `ifndef __USAGE_MANAGER_SV__
 `define __USAGE_MANAGER_SV__
 
+/* verilator lint_off WIDTH */
 module usage_manager #(
     parameter int unsigned ENTRY_COUNT = 8,
     parameter int unsigned ENQ_WIDTH = 2,
@@ -270,5 +271,6 @@ module usage_manager #(
     );
 
 endmodule : usage_manager
+/* verilator lint_on WIDTH */
 
 `endif

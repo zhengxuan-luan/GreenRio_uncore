@@ -49,6 +49,7 @@
         "new": "cpp",
         "stdexcept": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "unordered_set": "cpp"
     }
 }

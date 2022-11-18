@@ -1,3 +1,4 @@
+/* verilator lint_off WIDTH */
 module sp_fifo_dat_vld_output
 #(
     parameter type payload_t = logic[3:0],
@@ -104,3 +105,4 @@ module sp_fifo_dat_vld_output
     );
     
 endmodule : sp_fifo_dat_vld_output
+/* verilator lint_on WIDTH */

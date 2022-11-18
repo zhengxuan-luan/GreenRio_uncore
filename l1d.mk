@@ -70,7 +70,9 @@ $(BUILD_DIR)/l1d: $(VERILOG_SRC) $(SIM_SRC) | $$(dir $$@)
 	echo $(VERILOG_SRC)
 	@echo Building $@
 	$(VERILATOR) $(VERIFLAGS) --trace --cc --exe --build --top-module l1d_top \
-	-Wno-UNUSED -Wno-UNOPTFLAT -Wno-PINMISSING -Wno-EOFNEWLINE -Wno-PINCONNECTEMPTY -Wno-VARHIDDEN -Wno-WIDTH \
-	+define+USE_VERILATOR+LSU_DEBUG \
-	-LDFLAGS -lelf $(SRC_NEW_DIR)/l1d_top.sv $(SIM_DIR)/l1d/l1d.cpp 
+	-Wno-UNUSED -Wno-UNOPTFLAT -Wno-PINMISSING -Wno-EOFNEWLINE -Wno-PINCONNECTEMPTY \
+	+define+USE_VERILATOR+LSU_DEBUG+LOG_ENABLE+RANDOM_PADDR_ENABLE \
+	-LDFLAGS -lelf \
+	$(SRC_NEW_DIR)/l1d_top.sv $(SIM_DIR)/l1d/l1d.cpp $(SIM_DIR)/l1d/util.cpp \
+	$(SIM_DIR)/l1d/fake_mem.cpp $(SIM_DIR)/l1d/fake_rcu.cpp $(SIM_DIR)/l1d/monitor.cpp  
 	./build/Vl1d_top

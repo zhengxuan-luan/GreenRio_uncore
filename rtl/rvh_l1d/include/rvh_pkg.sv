@@ -1,5 +1,6 @@
 `ifndef __RVH_PKG_SV__
 `define __RVH_PKG_SV__
+/* verilator lint_off WIDTH */
 
 package rvh_pkg;
 
@@ -165,4 +166,5 @@ package rvh_pkg;
 
 endpackage : rvh_pkg
 
+/* verilator lint_on WIDTH */
 `endif

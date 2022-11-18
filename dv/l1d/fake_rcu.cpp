@@ -48,6 +48,7 @@ void FakeRCU::new_req(const Req& e){
 }
 void FakeRCU::eval(){
     // handle old iss
+    // printf("rcu:1\n");
     if(_lsu_rdy){
         _lsu_rdy = 0;
         if(_lsu_req_vld) { // handshake
@@ -56,7 +57,7 @@ void FakeRCU::eval(){
                 if(it->rob_index != _lsu_req.rob_index) continue;
                 it->issued = 1;
 #ifdef LOG_ENABLE
-                LOG << "t " << std::dec << TIME << ":rcu req issue.\t\t"
+                LOG << "t " << std::dec << TIME << ":rcu req issued.\t\t"
                     << (it->load_or_store ? "st-" : "ld-") << std::dec << uint32_t(it->opcode) << "\t"
                     << " @ 0x" << std::hex  << it->paddr << "\t"
                     << " ROB index: " << std::dec << uint32_t(it->rob_index ) << "\t"
@@ -73,15 +74,16 @@ void FakeRCU::eval(){
         }
     }
 
+    // printf("rcu:2\n");
     // enque new req
     if(_new_req_vld && _rcu->size() < RCU_MAX_SIZE){
         _new_req_vld = 0;
         if(_rcu->size() != 0){
             _new_req.rob_index = (_rcu->back().rob_index + 1) % RCU_MAX_SIZE;
-            if(_new_req.rob_index == 0) _new_req.rob_index ++;
+            // if(_new_req.rob_index == 0) _new_req.rob_index ++;
         }
         else{
-            _new_req.rob_index = 1;
+            _new_req.rob_index = 0;
         }
         _rcu->push_back(_new_req);
 #ifdef LOG_ENABLE
@@ -117,6 +119,7 @@ void FakeRCU::eval(){
 //         }
 //     }
 
+    // printf("rcu:3\n");
     // handle resp
     if(_lsu_resp_vld){
         _lsu_resp_vld = 0;
@@ -139,6 +142,8 @@ void FakeRCU::eval(){
         }
     }
 
+    // printf("rcu:4\n");
+    // printf("size of rcu: %d\n", _rcu->size());
     // wake_up
     _wake_up_vld = 0;
     for(auto it = _rcu->begin(); it != _rcu->end(); it ++){
@@ -170,6 +175,7 @@ void FakeRCU::eval(){
         }
     }
 
+    // printf("rcu:5\n");
     // issue
     if(!_lsu_req_vld){
         for(auto it = _rcu->begin(); it != _rcu->end(); it ++){
@@ -185,9 +191,10 @@ void FakeRCU::eval(){
             break;
         }
     }
+    // printf("rcu:6\n");
     // commit req
     _new_comm_vld = 0;
-    if(_rcu->front().issued == 1 && _rcu->front().done == 1 && _rcu->front().awake == 1){
+    if(_rcu->size() > 0 && _rcu->front().issued == 1 && _rcu->front().done == 1 && _rcu->front().awake == 1){
         _new_comm_vld = 1;
         _new_comm = _rcu->front();
         _rcu->pop_front();

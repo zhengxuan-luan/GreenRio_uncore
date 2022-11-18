@@ -12,6 +12,7 @@
 #include <map> 
 #include "./fake_rcu.hpp"
 #include "./params.hpp"
+#include "./fake_mem.hpp"
 #include "./util.hpp"
 
 
@@ -41,13 +42,6 @@ private:
     // fence 
     uint16_t _lsu_head = 0;
     uint16_t _lsu_tail = 0;
-
-    bool _fenced_vld = 0;
-    uint16_t _fenced_lsq_index = 0;
-
-    bool _lsu_iss_vld = 0;
-    bool _lsu_iss_is_fenced = 0;
-    uint16_t _lsu_iss_lsq_index = 0;
 
     uint64_t _testcase_max = 0;
 public:
@@ -80,10 +74,6 @@ public:
 
     void lsu_head(const uint16_t& h);
     void lsu_tail(const uint16_t& t);
-
-    void lsu_iss_vld(const bool& v);
-    void lsu_iss_is_fenced(const bool& f);
-    void lsu_iss_lsq_index(const uint16_t& ri);
 
     void l1d_req_vld(const bool& v);
     void l1d_req_is_fenced(const bool& f);

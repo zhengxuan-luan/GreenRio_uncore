@@ -1,5 +1,7 @@
 module rvh_pmp_entry #(
+/* verilator lint_off VARHIDDEN */
     parameter PADDR_WIDTH = 56
+/* verilator lint_on VARHIDDEN */
 ) (
     // PMP Configuration Port
     input cfg_set_vld_i,
@@ -24,6 +26,7 @@ module rvh_pmp_entry #(
     input rstn
 );
 
+/* verilator lint_off VARHIDDEN */
   localparam PMP_ACCESS_TYPE_R = 0;
   localparam PMP_ACCESS_TYPE_W = 1;
   localparam PMP_ACCESS_TYPE_X = 2;
@@ -32,6 +35,7 @@ module rvh_pmp_entry #(
   localparam PMPCFG_A_TOR = 1;
   localparam PMPCFG_A_NA4 = 2;
   localparam PMPCFG_A_NAPOT = 3;
+/* verilator lint_on VARHIDDEN */
 
   wire pmpaddr_clk_en;
   wire pmpcfg_clk_en;
