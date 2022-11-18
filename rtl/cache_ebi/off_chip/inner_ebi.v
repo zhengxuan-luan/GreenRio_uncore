@@ -13,6 +13,7 @@ module inner_ebi #(
     //AR
     output                      l2_req_if_arready_o,
     input                       l2_req_if_arvalid_i,
+    input   [1:0]               arid_i,
     input   [PADDR_WIDTH-1:0]   araddr_i,
     input   [3:0]               arsnoop_i,
 
@@ -30,6 +31,7 @@ module inner_ebi #(
     // R
     output                      l2_resp_if_rvalid_o,
     input                       l2_resp_if_rready_i,
+    output  [1:0]               rid_o,
     output  [DATA_WIDTH-1:0]    rdata_o,
     output  [1:0]               mesi_sta_o,
 
@@ -159,7 +161,8 @@ always @(posedge clk) begin
 end
 
 // ----------------------- READ_BUFFER FSM---------------------
-localparam R_BUFFER_LENGTH = EBI_WIDTH + PADDR_WIDTH + EBI_WIDTH + EBI_WIDTH;
+localparam R_BUFFER_LENGTH = EBI_WIDTH + EBI_WIDTH + PADDR_WIDTH + EBI_WIDTH + EBI_WIDTH;
+//                            arsnoop      arid         araddr       opcode      start
 reg [R_BUFFER_LENGTH-1:0] r_buffer;
 reg r_buffer_valid;
 wire r_resp_done;
@@ -169,7 +172,7 @@ always @(posedge clk) begin
         r_buffer_valid <= 1'b0;
     end else begin
         if(l2_req_if_arvalid_i && l2_req_if_arready_o) begin
-            r_buffer <= {{(EBI_WIDTH-4){1'b0}}, arsnoop_i, araddr_i, {(EBI_WIDTH-OPCODE_WIDTH){1'b0}}, host_DR, {EBI_WIDTH{1'b0}}};  //地址先发低位后发高位
+            r_buffer <= {{(EBI_WIDTH-2){1'b0}}, arid_i, {(EBI_WIDTH-4){1'b0}}, arsnoop_i, araddr_i, {(EBI_WIDTH-OPCODE_WIDTH){1'b0}}, host_DR, {EBI_WIDTH{1'b0}}};  //地址先发低位后发高位
             r_buffer_valid <= 1'b1;
         end else if(r_resp_done) begin //完成了一次direct read transaction
             r_buffer_valid <= 1'b0;
@@ -339,7 +342,7 @@ wire is_counter_ena  = is_send_mode | is_rd_rcv;
 localparam SEND_BUFFER_LENGTH = EBI_WIDTH + CACHELINE_LENGTH + EBI_WIDTH + PADDR_WIDTH + EBI_WIDTH;
 wire [SEND_BUFFER_LENGTH-1 : 0] trx_senddata_mux;
 
-assign trx_senddata_mux =   (trx_current_state == SEND_AR) ? {{CACHELINE_LENGTH{1'b0}}, r_buffer} :
+assign trx_senddata_mux =   (trx_current_state == SEND_AR) ? {{(CACHELINE_LENGTH-EBI_WIDTH){1'b0}}, r_buffer} :
                             (trx_current_state == SEND_W) ? w_buffer : snp_buffer; //default: snp_buffer
 
 wire [CACHELINE_LENGTH + EBI_WIDTH*2 -1 : 0] trx_resp_data;
@@ -384,6 +387,7 @@ assign r_resp_done = l2_resp_if_rvalid_o && l2_resp_if_rready_i && (read_counter
 //------------------------interface----------------------------------
 assign mesi_sta_o = trx_resp_data[CACHELINE_LENGTH +: 2];
 assign rdata_o = trx_resp_data[read_counter * DATA_WIDTH +: DATA_WIDTH]; //ebi_width include opcode
+assign rid_o = trx_resp_data[CACHELINE_LENGTH + EBI_WIDTH +: 2];
 assign l2_resp_if_rvalid_o = (trx_current_state == RESP_R);
 assign l2_req_if_arready_o = (!r_buffer_valid) && (current_bus_occupy == ACCQUIRE_BUS);
 assign l2_req_if_awready_o = (!w_buffer_valid) && (current_bus_occupy == ACCQUIRE_BUS) && (!wdata_exist);

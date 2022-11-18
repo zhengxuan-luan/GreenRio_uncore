@@ -13,6 +13,7 @@ module outer_ebi #(
     //AR
     input                           l2_req_if_arready_i,
     output                          l2_req_if_arvalid_o,
+    output   [1:0]                  arid_o,
     output   [PADDR_WIDTH-1:0]      araddr_o,
     output   [3:0]                  arsnoop_o,
     
@@ -30,6 +31,7 @@ module outer_ebi #(
     // R    
     input                           l2_resp_if_rvalid_i,
     output                          l2_resp_if_rready_o,
+    input  [1:0]                    rid_i,
     input  [DATA_WIDTH-1:0]         rdata_i,
     input  [1:0]                    mesi_sta_i,
     
@@ -181,7 +183,7 @@ end
 assign w_complete = l2_req_if_wvalid_o && l2_req_if_wready_i && (write_counter == (CACHELINE_LENGTH/DATA_WIDTH - 1));
 
 // -----------------------R_BUFFER FSM----------------------
-localparam R_BUFFER_LENGTH = EBI_WIDTH + CACHELINE_LENGTH + EBI_WIDTH  + EBI_WIDTH; // start + opcode + data +mesi_sta
+localparam R_BUFFER_LENGTH = EBI_WIDTH + CACHELINE_LENGTH + EBI_WIDTH  + EBI_WIDTH + EBI_WIDTH; // start + opcode + data +mesi_sta + rid
 reg r_buffer_valid;
 reg [R_BUFFER_LENGTH-1:0] r_buffer;
 reg [4:0] r_buf_fill_count;
@@ -201,6 +203,7 @@ always @(posedge clk) begin
             if (r_buf_fill_count < R_FILL) begin
                 r_buffer[0 +: 2*EBI_WIDTH] <= {{(EBI_WIDTH-OPCODE_WIDTH){1'b0}}, slave_RD_RESP, {EBI_WIDTH{1'b0}}};
                 r_buffer[2*EBI_WIDTH + CACHELINE_LENGTH +: EBI_WIDTH] <= {{(EBI_WIDTH - 2){1'b0}}, mesi_sta_i};
+                r_buffer[3*EBI_WIDTH + CACHELINE_LENGTH +: EBI_WIDTH] <= {{(EBI_WIDTH - 2){1'b0}}, rid_i};
                 r_buffer[2*EBI_WIDTH + r_buf_fill_count * DATA_WIDTH +: DATA_WIDTH] <= rdata_i;
                 r_buf_fill_count <= r_buf_fill_count + 1;
             end
@@ -310,11 +313,11 @@ wire is_rd_rcv = ((trx_current_state == RECV_SNP_RESP) || (trx_current_state == 
 wire is_counter_ena  = is_send_mode | is_rd_rcv;
 
 
-localparam SEND_BUFFER_LENGTH = EBI_WIDTH + CACHELINE_LENGTH + EBI_WIDTH + PADDR_WIDTH + EBI_WIDTH;
+localparam SEND_BUFFER_LENGTH = EBI_WIDTH + CACHELINE_LENGTH + EBI_WIDTH + PADDR_WIDTH + EBI_WIDTH + EBI_WIDTH;
 wire [SEND_BUFFER_LENGTH-1 : 0] trx_senddata_mux;
 
-assign trx_senddata_mux =   (trx_current_state == SEND_SNP_REQ) ? {{CACHELINE_LENGTH{1'b0}}, snp_buffer} :
-                            (trx_current_state == R_RESP) ? r_buffer :{{(SEND_BUFFER_LENGTH-2*EBI_WIDTH){1'b0}}, {EBI_WIDTH{1'b1}}, {EBI_WIDTH{1'b0}}};  //default is ack slot
+assign trx_senddata_mux =   (trx_current_state == SEND_SNP_REQ) ? {{(CACHELINE_LENGTH + EBI_WIDTH){1'b0}}, snp_buffer} :
+                            (trx_current_state == R_RESP) ? r_buffer :{{(SEND_BUFFER_LENGTH-*EBI_WIDTH){1'b0}}, {EBI_WIDTH{1'b1}}, {EBI_WIDTH{1'b0}}};  //default is ack slot
 
 wire [CACHELINE_LENGTH + EBI_WIDTH + PADDR_WIDTH -1 : 0] trx_req_data;
 
@@ -360,6 +363,7 @@ end
 assign snp_resp_done = l2_resp_if_snvalid_o && l2_resp_if_snready_i && ((!sn_resp_has_data) || (sn_resp_has_data && (snp_resp_counter == (CACHELINE_LENGTH/DATA_WIDTH - 1))));
 //------------------------interface----------------------------------
 assign l2_req_if_arvalid_o = (trx_current_state == FORWARD_RREQ) && (current_bus_occupy == RELEASE_BUS);
+assign arid_o = trx_req_data[PADDR_WIDTH + EBI_WIDTH +: 2];
 assign araddr_o = trx_req_data[PADDR_WIDTH-1:0];
 assign arsnoop_o = trx_req_data[PADDR_WIDTH +: 4];
 assign l2_resp_if_rready_o = (trx_current_state == WAIT_R_CONTENT) && (current_bus_occupy == RELEASE_BUS);
