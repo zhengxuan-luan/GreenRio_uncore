@@ -372,6 +372,7 @@ int main(){
     soc.master_read(UART_RX_DATA_ADDR, 1); 
     soc.master_write(IRQ_COMPLETE_ADDR, 1, 1);
     printf("plic pass(uart interrupt)!!!\n");
+    printf("SoC pass!\n");
     for(int ttt = 0; ttt < 100; ttt++)
         soc.cycle();
     soc.close();
