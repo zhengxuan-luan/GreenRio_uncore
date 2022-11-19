@@ -719,6 +719,9 @@ always @(posedge clk) begin
         $display("%d: wake up @ rob %d",cycle, rcu_lsu_wakeup_rob_index_i);
       if(lsu_rcu_comm_vld_o)
         $display("%d: req commit @ rob %d rd %d data:%x",cycle, lsu_rcu_comm_rob_index_o, lsu_rcu_comm_rd_addr_o, lsu_rcu_comm_data_o);
+      if(ptw_walk_req_vld) begin
+        
+      end
     end
     /* verilator lint_on WIDTH */
 end
