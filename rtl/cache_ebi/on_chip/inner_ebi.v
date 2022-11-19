@@ -25,8 +25,8 @@ module inner_ebi #(
 
     // W 
     output  reg                 l2_req_if_wready_o,
-    input                       l2_req_if_wvalid_i,
-    input   [DATA_WIDTH-1:0]    wdata_i,
+    input                       dff_l2_req_if_wvalid_i,
+    input   [DATA_WIDTH-1:0]    dff_wdata_i,
 
     // R
     output                      l2_resp_if_rvalid_o,
@@ -59,6 +59,14 @@ module inner_ebi #(
     output        reg           bus_switch_o,
     output        reg           bus_switch_oen  //slave输出,master监听
 );
+// patch--------------------
+reg l2_req_if_wvalid_i;
+reg [DATA_WIDTH-1:0] wdata_i;
+always @(posedge clk) begin
+    l2_req_if_wvalid_i <= dff_l2_req_if_wvalid_i;
+    wdata_i <= dff_wdata_i;
+end
+
 localparam OPCODE_WIDTH = 4;
 localparam IDLE         = 4'h0;
 localparam SEND_AR      = 4'h1;

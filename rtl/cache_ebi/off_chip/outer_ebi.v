@@ -29,11 +29,11 @@ module outer_ebi #(
     output   [DATA_WIDTH-1:0]       wdata_o,
     
     // R    
-    input                           l2_resp_if_rvalid_i,
+    input                           dff_l2_resp_if_rvalid_i,
     output                          l2_resp_if_rready_o,
-    input  [1:0]                    rid_i,
-    input  [DATA_WIDTH-1:0]         rdata_i,
-    input  [1:0]                    mesi_sta_i,
+    input  [1:0]                    dff_rid_i,
+    input  [DATA_WIDTH-1:0]         dff_rdata_i,
+    input  [1:0]                    dff_mesi_sta_i,
     
     // SNOOP REQ    
     output                          l2_req_if_snready_o,
@@ -61,6 +61,17 @@ module outer_ebi #(
 );
 //oen对gpio并起不到控制作用,它的作用是为了方便debug以及在fpga上实现三态门
 
+// patch----------------------------
+reg l2_resp_if_rvalid_i;
+reg [1:0] rid_i;
+reg [DATA_WIDTH-1:0] rdata_i;
+reg [1:0] mesi_sta_i;
+always@(posedge clk) begin
+    l2_resp_if_rvalid_i <= dff_l2_resp_if_rvalid_i;
+    rid_i <= dff_rid_i;
+    rdata_i <= dff_rdata_i;
+    mesi_sta_i <= dff_mesi_sta_i;
+end
 // state transition
 localparam OPCODE_WIDTH = 4;
 localparam IDLE         = 4'h0;
@@ -209,6 +220,7 @@ always @(posedge clk) begin
             end
         end else if ((trx_pre_state ==  WAIT_R_CONTENT) && (trx_current_state == R_RESP)) begin 
             r_buffer_valid <= 1'b0;
+            r_buf_fill_count <= 0;
         end
     end
 end
@@ -317,7 +329,7 @@ localparam SEND_BUFFER_LENGTH = EBI_WIDTH + CACHELINE_LENGTH + EBI_WIDTH + PADDR
 wire [SEND_BUFFER_LENGTH-1 : 0] trx_senddata_mux;
 
 assign trx_senddata_mux =   (trx_current_state == SEND_SNP_REQ) ? {{(CACHELINE_LENGTH + EBI_WIDTH){1'b0}}, snp_buffer} :
-                            (trx_current_state == R_RESP) ? r_buffer :{{(SEND_BUFFER_LENGTH-*EBI_WIDTH){1'b0}}, {EBI_WIDTH{1'b1}}, {EBI_WIDTH{1'b0}}};  //default is ack slot
+                            (trx_current_state == R_RESP) ? r_buffer :{{(SEND_BUFFER_LENGTH-2*EBI_WIDTH){1'b0}}, {EBI_WIDTH{1'b1}}, {EBI_WIDTH{1'b0}}};  //default is ack slot
 
 wire [CACHELINE_LENGTH + EBI_WIDTH + PADDR_WIDTH -1 : 0] trx_req_data;
 

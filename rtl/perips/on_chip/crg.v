@@ -1,4 +1,8 @@
 module crg(
+    `ifdef USE_POWER_PINS
+    inout vccd1,	// User area 1 1.8V supply
+    inout vssd1,	// User area 1 digital ground
+    `endif
     input global_clk,
     input global_rst,
     input wbm_crg_cyc_i,
@@ -22,6 +26,7 @@ module crg(
     output domain4_clk_o,
     output domain4_rst_o
 );
+`ifdef VERIFY_SOC
 /* verilator lint_off LATCH */
 /* verilator lint_off UNOPTFLAT */
 reg domain1_clk_en, domain2_clk_en, domain3_clk_en, domain4_clk_en;
@@ -34,12 +39,50 @@ always @(*) begin  //use latch to remove glitch
     clk4_latch = domain4_clk_en;
     end
 end
-
 assign domain1_clk_o = global_clk & clk1_latch;
 assign domain2_clk_o = global_clk & clk2_latch;
 assign domain3_clk_o = global_clk & clk3_latch;
 assign domain4_clk_o = global_clk & clk4_latch;
 
+`else
+
+sky130_fd_sc_hd__dlclkp domain1_dlclkp_u (
+    .GCLK(domain1_clk_o),
+    .GATE(domain1_clk_en),
+    .CLK(global_clk),
+    .VPWR(),
+    .VGND(),
+    .VPB(),
+    .VNB()
+);
+sky130_fd_sc_hd__dlclkp domain2_dlclkp_u (
+    .GCLK(domain2_clk_o),
+    .GATE(domain2_clk_en),
+    .CLK(global_clk),
+    .VPWR(),
+    .VGND(),
+    .VPB(),
+    .VNB()
+);
+sky130_fd_sc_hd__dlclkp domain3_dlclkp_u (
+    .GCLK(domain3_clk_o),
+    .GATE(domain3_clk_en),
+    .CLK(global_clk),
+    .VPWR(),
+    .VGND(),
+    .VPB(),
+    .VNB()
+);
+sky130_fd_sc_hd__dlclkp domain4_dlclkp_u (
+    .GCLK(domain4_clk_o),
+    .GATE(domain4_clk_en),
+    .CLK(global_clk),
+    .VPWR(),
+    .VGND(),
+    .VPB(),
+    .VNB()
+);
+`endif
 
 reg domain1_rst_r, domain2_rst_r, domain3_rst_r, domain4_rst_r;
 assign domain1_rst_o = domain1_rst_r;

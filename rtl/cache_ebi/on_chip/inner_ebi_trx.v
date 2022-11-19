@@ -6,7 +6,7 @@ module inner_ebi_trx#(
                                    //start                        //opcode                //control info 
     parameter SEND_BUFFER_LENGTH = EBI_WIDTH + CACHELINE_LENGTH + EBI_WIDTH + PADDR_WIDTH + EBI_WIDTH ,
                                                 //control info     //opcode
-    parameter RECV_BUFFER_LENGTH = CACHELINE_LENGTH + EBI_WIDTH  + EBI_WIDTH
+    parameter RECV_BUFFER_LENGTH = CACHELINE_LENGTH + EBI_WIDTH  + EBI_WIDTH + EBI_WIDTH
 ) (
     input                                       clk,
     input                                       rst,
@@ -46,7 +46,7 @@ localparam HAS_DATA_CYCLE   = 1;
 localparam ID_CYCLE         = 1;
 localparam WS_ACK_CYCLE      = START_CYCLE + STOP_CYCLE - 2; //ws means `write or snoop` 
 localparam R_REQ_CYCLE      = START_CYCLE + OPCODE_CYCLE + ADDR_CYCLE + ARSNOOP_CYCLE + ID_CYCLE + STOP_CYCLE;
-localparam R_RESP_CYCLE     = START_CYCLE + OPCODE_CYCLE + DATA_CYCLE + MESISTA_CYCLE + STOP_CYCLE - 3;  // -3 because don't accept start and stop signal and opcode
+localparam R_RESP_CYCLE     = START_CYCLE + OPCODE_CYCLE + DATA_CYCLE + MESISTA_CYCLE + ID_CYCLE + STOP_CYCLE - 3;  // -3 because don't accept start and stop signal and opcode
 localparam W_REQ1_CYCLE     = START_CYCLE + OPCODE_CYCLE + ADDR_CYCLE + ARSNOOP_CYCLE + DATA_CYCLE + STOP_CYCLE;
 localparam W_REQ2_CYCLE     = START_CYCLE + OPCODE_CYCLE + ADDR_CYCLE + ARSNOOP_CYCLE + STOP_CYCLE;
 localparam SNP_REQ_CYCLE    = START_CYCLE + OPCODE_CYCLE + ADDR_CYCLE + SN_REQ_SNOOP_CYCLE + STOP_CYCLE - 2;
