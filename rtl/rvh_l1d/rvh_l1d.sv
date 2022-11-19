@@ -1461,14 +1461,14 @@ rvh_l1d_ptw_replay_buffer
 //   $value$plusargs("dc_debug_print=%d",dc_debug_print);
 // end
 
-// logic [63:0] cycle;
-// always_ff @(posedge clk or negedge rst) begin
-//   if(~rst) begin
-//     cycle <= '0;
-//   end else begin
-//     cycle <= cycle + 1;
-//   end
-// end
+logic [63:0] cycle;
+always_ff @(posedge clk or negedge rst) begin
+  if(~rst) begin
+    cycle <= '0;
+  end else begin
+    cycle <= cycle + 1;
+  end
+end
 
 // always_ff @(posedge clk) begin
 //   if(dc_debug_print) begin
@@ -1566,7 +1566,27 @@ rvh_l1d_ptw_replay_buffer
 //   end
 // end
 // `endif
+`ifdef LOG_LV1
+/* verilator lint_off VARHIDDEN */
+always @(posedge clk) begin
+    if(l1d_l2_req_arvalid_o & l1d_l2_req_arready_i)begin
+      $display("l1d miss. ar req fetch @ %x", l1d_l2_req_ar_o.araddr);
+    end
+    if(l2_l1d_resp_rvalid_i & l2_l1d_resp_rready_o)begin
+      $display("l1d r resp %x", l2_l1d_resp_r_i.dat);
+    end
+    if(ptw_walk_req_vld_i) begin
+      $display("l1d ptw req @ %x", ptw_walk_req_addr_i);
+    end
+    if(ptw_walk_resp_vld_o) begin
+      $display("l1d ptw resp, pte: %x ppn: %x", ptw_walk_resp_pte_o, (ptw_walk_resp_pte_o[10 +: PPN_WIDTH] >> 10));
+    end
+end
+/* verilator lint_on VARHIDDEN */
+`endif // LOG_LV1
+
 `ifdef LOG_LV2
+/* verilator lint_off VARHIDDEN */
 always @(posedge clk) begin
   for(int i = 0; i < LSU_ADDR_PIPE_COUNT; i++) begin
       if(ls_pipe_l1d_ld_req_vld_masked[i] & ls_pipe_l1d_ld_req_rdy_o[i]) begin
@@ -1659,7 +1679,11 @@ always @(posedge clk) begin
       end
       $display("\n====================");
     end
+    if(ptw_walk_req_vld_i) begin
+      $display("%d: ptw start @%x", cycle, ptw_walk_req_addr_i);
+    end
 end
+/* verilator lint_on VARHIDDEN */
 `endif // LOG_LV2
 endmodule : rvh_l1d
 /* verilator lint_on WIDTH */

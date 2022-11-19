@@ -697,4 +697,29 @@ rvh_monolithic_mmu #(
 //     .bus_switch_o(bus_switch_i),
 //     .bus_switch_oen(bus_switch_oen)  //slave输出,master监听
 // );
+logic [63:0] cycle;
+always_ff @(posedge clk) begin
+  if(rst) begin
+    cycle <= '0;
+  end else begin
+    cycle <= cycle + 1;
+  end
+end
+
+always @(posedge clk) begin
+    /* verilator lint_off WIDTH */
+    if(rst) begin
+      
+    end
+    else begin
+      if(rcu_lsu_vld_i & lsu_rcu_rdy_o)
+        $display("%d: req in: ls:%d-%d @ %x rob_index:%d rd_addr:%d data:%x",cycle,  rcu_lsu_ls_i, (rcu_lsu_ls_i ? rcu_lsu_st_opcode_i : rcu_lsu_ld_opcode_i), 
+          rcu_lsu_virt_base_i + rcu_lsu_virt_offset_i, rcu_lsu_rob_index_i, rcu_lsu_rd_addr_i, rcu_lsu_data_i);
+      if(rcu_lsu_wakeup_vld_i)
+        $display("%d: wake up @ rob %d",cycle, rcu_lsu_wakeup_rob_index_i);
+      if(lsu_rcu_comm_vld_o)
+        $display("%d: req commit @ rob %d rd %d data:%x",cycle, lsu_rcu_comm_rob_index_o, lsu_rcu_comm_rd_addr_o, lsu_rcu_comm_data_o);
+    end
+    /* verilator lint_on WIDTH */
+end
 endmodule

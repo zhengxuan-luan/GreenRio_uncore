@@ -130,9 +130,7 @@ void FakeMemory::eval(){
                             throw msg;
                         }
                     }
-                    if(i == 0){
-                        resp.r[0].rid = req.ar.arid;
-                    }
+                    resp.r[i].rid = req.ar.arid;
                     if(i == BURST_NUM - 1){
                         resp.r[BURST_NUM - 1].rlast = 1;
                     }

@@ -15,7 +15,7 @@
 #include "include.hpp"
 
 // const uint64_t MAX_TIME = 30000000;
-const uint64_t MAX_TIME = 40000;
+const uint64_t MAX_TIME = 400;
 const uint64_t RANDOM_TEST_NUM = 10;
 const uint32_t RST_TIME = 100;
 
@@ -77,10 +77,16 @@ void reset(){
 }
 
 int main(int argc, char ** argv, char** env) {
+    VerilatedContext* contextp;
+    contextp = new VerilatedContext;
+
+    l1d = new Vl1d_top(contextp);
+
     Verilated::commandArgs(argc, argv);
-    Verilated::traceEverOn(true);
-    VerilatedVcdC* tfp = new VerilatedVcdC();
-    l1d = new Vl1d_top("l1d");
+    
+    VerilatedVcdC* tfp = new VerilatedVcdC;
+
+    contextp->traceEverOn(true); 
     l1d->trace(tfp, 0);
     tfp->open(WAVE_PATH.c_str());
 
@@ -121,19 +127,19 @@ int main(int argc, char ** argv, char** env) {
     // printf("2\n");
     // printf("3\n");
     try {
-        while(!monitor->ut_done() && main_time < MAX_TIME){
-            sync_time(main_time);
+        while(!monitor->ut_done() && contextp->time() < MAX_TIME){
+            sync_time(contextp->time());
 
-            if(main_time % 10 == 0){
+            if(contextp->time() % 10 == 0){
                 // printf("clk = 1");
                 l1d->clk = 1;
             }
-            else if(main_time % 10 == 5){
+            else if(contextp->time() % 10 == 5){
                 // printf("clk = 0");
                 l1d->clk = 0;
             }
             
-            if(main_time > RST_TIME){
+            if(contextp->time() > RST_TIME){
                 l1d->rst = 0;
                 // monitor
                 rcu->new_req_vld(monitor->req_vld());
@@ -258,7 +264,7 @@ int main(int argc, char ** argv, char** env) {
                l1d->l2_l1d_resp_b_i = real_mem->b_resp().bid << 2;
             } 
             
-            if((main_time % 10 == 0) && main_time > RST_TIME){
+            if((contextp->time() % 10 == 0) && contextp->time() > RST_TIME){
                 // printf("6.3\n");
                 monitor->eval();
                 // printf("6.4\n");
@@ -273,8 +279,8 @@ int main(int argc, char ** argv, char** env) {
 
             // printf("7\n");
             l1d->eval();
-            tfp->dump(main_time);
-            main_time ++;
+            tfp->dump(contextp->time());
+            contextp->timeInc(1);
             // printf("8\n");
         }
     }
@@ -293,7 +299,7 @@ int main(int argc, char ** argv, char** env) {
             delete rcu;
         LOG.close();
     }
-    tfp->dump(main_time);
+    tfp->dump(contextp->time());
     tfp->close();
 
     delete tfp;
@@ -305,6 +311,6 @@ int main(int argc, char ** argv, char** env) {
         delete monitor;
     if(rcu != nullptr)
         delete rcu;
-    LOG.close();
+    close_log();
     exit(0);
 }

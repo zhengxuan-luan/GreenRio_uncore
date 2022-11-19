@@ -5,3 +5,6 @@ env.sh
 *.vcd
 build
 gmon.out
+
+./dv/l1d/logs/*
+./dv/l1d/waves/*

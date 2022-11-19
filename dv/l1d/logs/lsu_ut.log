@@ -1,4 +1,4 @@
-Sat Nov 19 00:54:50 2022
+Sat Nov 19 13:13:42 2022
 
 t 140:rcu req enque.		st-3	 @ 0x80009448	 ROB index: 0	 rd addr: 0	 delay: 3	 is fenced: false data: 238e1f2946e87ccd
 t 150:rcu req issued.		st-3	 @ 0x80009448	 ROB index: 0	 rd addr: 0	 delay: 3	 is fenced: false data: 238e1f2946e87ccd
