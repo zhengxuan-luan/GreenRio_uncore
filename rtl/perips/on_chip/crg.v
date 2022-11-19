@@ -26,6 +26,7 @@ module crg(
     output domain4_clk_o,
     output domain4_rst_o
 );
+`define VERIFY_SOC
 `ifdef VERIFY_SOC
 /* verilator lint_off LATCH */
 /* verilator lint_off UNOPTFLAT */
