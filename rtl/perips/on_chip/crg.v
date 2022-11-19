@@ -49,38 +49,22 @@ assign domain4_clk_o = global_clk & clk4_latch;
 sky130_fd_sc_hd__dlclkp domain1_dlclkp_u (
     .GCLK(domain1_clk_o),
     .GATE(domain1_clk_en),
-    .CLK(global_clk),
-    .VPWR(),
-    .VGND(),
-    .VPB(),
-    .VNB()
+    .CLK(global_clk)
 );
 sky130_fd_sc_hd__dlclkp domain2_dlclkp_u (
     .GCLK(domain2_clk_o),
     .GATE(domain2_clk_en),
-    .CLK(global_clk),
-    .VPWR(),
-    .VGND(),
-    .VPB(),
-    .VNB()
+    .CLK(global_clk)
 );
 sky130_fd_sc_hd__dlclkp domain3_dlclkp_u (
     .GCLK(domain3_clk_o),
     .GATE(domain3_clk_en),
-    .CLK(global_clk),
-    .VPWR(),
-    .VGND(),
-    .VPB(),
-    .VNB()
+    .CLK(global_clk)
 );
 sky130_fd_sc_hd__dlclkp domain4_dlclkp_u (
     .GCLK(domain4_clk_o),
     .GATE(domain4_clk_en),
-    .CLK(global_clk),
-    .VPWR(),
-    .VGND(),
-    .VPB(),
-    .VNB()
+    .CLK(global_clk)
 );
 `endif
 
