@@ -1,3 +1,4 @@
+/* verilator lint_off WIDTH */
 module mp_fifo_ptr_output
 #(
     parameter type payload_t = logic[3:0],
@@ -92,3 +93,4 @@ module mp_fifo_ptr_output
     );
     
 endmodule : mp_fifo_ptr_output
+/* verilator lint_on WIDTH */

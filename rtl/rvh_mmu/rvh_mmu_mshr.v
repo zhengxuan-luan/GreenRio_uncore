@@ -1,9 +1,12 @@
+/* verilator lint_off WIDTH */
 module rvh_mmu_mshr #(
+/* verilator lint_off VARHIDDEN */
     parameter ALLOC_WIDTH = 1,
     parameter ENTRY_COUNT = 1,
     parameter VPN_WIDTH = 27,
     parameter TRANS_ID_WIDTH = 3,
     parameter ASID_WIDTH = 16
+/* verilator lint_on VARHIDDEN */
 ) (
     // TLB Miss Request
     input [ALLOC_WIDTH-1:0] tlb_miss_req_vld_i,
@@ -158,3 +161,4 @@ module rvh_mmu_mshr #(
 
 
 endmodule
+/* verilator lint_on WIDTH */

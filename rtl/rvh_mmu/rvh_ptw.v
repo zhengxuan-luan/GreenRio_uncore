@@ -1,4 +1,5 @@
 module rvh_ptw #(
+/* verilator lint_off VARHIDDEN */
     parameter TRANS_ID_WIDTH = 3,
     parameter PADDR_WIDTH = 56,
     parameter EXCP_CAUSE_WIDTH = 64,
@@ -11,6 +12,7 @@ module rvh_ptw #(
     localparam PAGE_LVL_WIDTH = $clog2(VPN_WIDTH / 9),
     localparam PPN_WIDTH = 44,
     localparam PTE_WIDTH = 64
+/* verilator lint_on VARHIDDEN */
 ) (
     // priv lvl
     input [1:0] priv_lvl_i,
@@ -58,6 +60,7 @@ module rvh_ptw #(
 
   // Exception Cause
 
+/* verilator lint_off VARHIDDEN */
   // Mode
   localparam MODE_BARE = 0;
   localparam MODE_SV39 = 8;
@@ -80,6 +83,7 @@ module rvh_ptw #(
   localparam PTW_STATE_CHECK_PERMISSION = 2'b01;
   localparam PTW_STATE_INFLIGHT = 2'b11;
 
+/* verilator lint_on VARHIDDEN */
   reg [PAGE_LVL_WIDTH-1:0] highest_page_lvl;
 
   wire [PTW_STATE_WIDTH-1:0] ptw_state_d;

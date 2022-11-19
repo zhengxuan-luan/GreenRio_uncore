@@ -4,6 +4,9 @@
 
 void init_log(){
     LOG.open(LOG_PATH);
+    if(!LOG.is_open()){
+        throw "LOG open failed";
+    }
     std::time_t result = std::time(nullptr);
     LOG << std::asctime(std::localtime(&result)) << std::endl;
 }

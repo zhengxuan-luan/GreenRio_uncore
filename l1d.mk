@@ -44,7 +44,7 @@ VERIFLAGS += $(addprefix -I,$(shell find $(SRC_NEW_DIR)/rvh_l1d -type d))
 VERIFLAGS += $(addprefix -I,$(shell find $(SRC_NEW_DIR)/include -type d)) 
 VERIFLAGS += $(addprefix -I,$(shell find $(SRC_NEW_DIR)/utils -type d)) 
 VERIFLAGS += $(addprefix -I,$(shell find $(SRC_NEW_DIR) -type d)) 
-VERIFLAGS += -Wall -Mdir $(BUILD_DIR)
+VERIFLAGS += -Wall -Mdir $(BUILD_DIR) --timescale 1ns/1ps --timescale-override 1ns/1ps
 
 # ==
 
@@ -69,8 +69,10 @@ l1d:$(BUILD_DIR)/l1d
 $(BUILD_DIR)/l1d: $(VERILOG_SRC) $(SIM_SRC) | $$(dir $$@)
 	echo $(VERILOG_SRC)
 	@echo Building $@
-	$(VERILATOR) $(VERIFLAGS) --trace --cc --exe --build --top-module l1d_top \
-	-Wno-UNUSED -Wno-UNOPTFLAT -Wno-PINMISSING -Wno-EOFNEWLINE -Wno-PINCONNECTEMPTY -Wno-VARHIDDEN -Wno-WIDTH \
-	+define+USE_VERILATOR+LSU_DEBUG \
-	-LDFLAGS -lelf $(SRC_NEW_DIR)/l1d_top.sv $(SIM_DIR)/l1d/l1d.cpp 
+	$(VERILATOR) $(VERIFLAGS) --trace --cc --exe --build \
+	-Wno-UNUSED -Wno-UNOPTFLAT -Wno-PINMISSING -Wno-EOFNEWLINE -Wno-PINCONNECTEMPTY \
+	+define+USE_VERILATOR+LSU_DEBUG+LOG_ENABLE+RANDOM_PADDR_ENABLE+LOG_LV1 \
+	-LDFLAGS -lelf \
+	$(SRC_NEW_DIR)/l1d_top.sv $(SIM_DIR)/l1d/l1d.cpp $(SIM_DIR)/l1d/util.cpp \
+	$(SIM_DIR)/l1d/fake_mem.cpp $(SIM_DIR)/l1d/fake_rcu.cpp $(SIM_DIR)/l1d/monitor.cpp  
 	./build/Vl1d_top

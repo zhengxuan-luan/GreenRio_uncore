@@ -451,29 +451,40 @@ lsu_lsq  #(
 );
 `ifdef LOG_LV1
 always @(posedge clk) begin
-    // if(lsu_rdy_o & rcu_lsu_vld_i) begin
-    //     $display($realtime, ":\t LSU req recieved. %s-%d\t@ 0x%x\tfenced:%d\trob_index:%d\trd_addr:%d\tdata:%x", 
-    //         rcu_lsu_ls_i ? "st" : "ld", rcu_lsu_ls_i ? rcu_lsu_st_opcode_i : rcu_lsu_ld_opcode_i, 
-    //         agu_virt_addr,rcu_lsu_fenced_i, rcu_lsu_rob_index_i, rcu_lsu_rd_addr_i, rcu_lsu_data_i
-    //     );
-    // end 
+    /* verilator lint_off WIDTH */
+    if(lsu_rdy_o & rcu_lsu_vld_i) begin
+        $display($realtime, ":\t LSU req recieved. %s-%d\t@ 0x%x\tfenced:%d\trob_index:%d\trd_addr:%d\tdata:%x", 
+            rcu_lsu_ls_i ? "st" : "ld", rcu_lsu_ls_i ? rcu_lsu_st_opcode_i : rcu_lsu_ld_opcode_i, 
+            agu_virt_addr,rcu_lsu_fenced_i, rcu_lsu_rob_index_i, rcu_lsu_rd_addr_i, rcu_lsu_data_i
+        );
+    end 
     if(rcu_lsu_wakeup_i) begin
         $display($realtime, ":\twakeup @ %d", rcu_lsu_wakeup_rob_index_i);
     end
+    if(lsu_dtlb_flush_vld_o) begin
+        $display("LSU dtlb flush");
+    end
+    if(lsu_dtlb_iss_vld_o & dtlb_lsu_rdy_i) begin
+        $display("LSU dtlb look up: %x", lsu_dtlb_iss_vtag_o);
+    end
+    if(dtlb_lsu_vld_i) begin
+        $display("LSU dtlb resp. %s, %x", (dtlb_lsu_hit_i ? "hit" : "miss"), lsu_dtlb_iss_vtag_o);
+    end
 `ifdef LOG_LV2
-    // if(lsu_l1d_ld_req_vld_o & l1d_lsu_ld_req_rdy_i) begin
-    //     $display($realtime, ":\tLSU ld req sent. ld-%d\t@ 0x%x\trob_index:%d\trd_addr:%d", 
-    //         lsu_l1d_ld_req_opcode_o, {lsu_l1d_ld_req_vtag_o, lsu_l1d_ld_req_index_o, lsu_l1d_ld_req_offset_o},
-    //         lsu_l1d_ld_req_rob_index_o, lsu_l1d_ld_req_rd_addr_o
-    //     );
-    // end 
-    // if(lsu_l1d_st_req_vld_o & l1d_lsu_st_req_rdy_i) begin
-    //     $display($realtime, ":\tLSU st req sent. st-%d\t@ 0x%x\tfenced:%d\trob_index:%d\trd_addr:%d\tdata:%x", 
-    //         lsu_l1d_st_req_opcode_o, lsu_l1d_st_req_paddr_o, lsu_l1d_st_req_is_fence_o, 
-    //         lsu_l1d_st_req_rob_index_o, lsu_l1d_st_req_rd_addr_o, lsu_l1d_st_req_data_o
-    //     );
-    // end 
+    if(lsu_l1d_ld_req_vld_o & l1d_lsu_ld_req_rdy_i) begin
+        $display($realtime, ":\tLSU ld req sent. ld-%d\t@ 0x%x\trob_index:%d\trd_addr:%d", 
+            lsu_l1d_ld_req_opcode_o, {lsu_l1d_ld_req_vtag_o, lsu_l1d_ld_req_index_o, lsu_l1d_ld_req_offset_o},
+            lsu_l1d_ld_req_rob_index_o, lsu_l1d_ld_req_rd_addr_o
+        );
+    end 
+    if(lsu_l1d_st_req_vld_o & l1d_lsu_st_req_rdy_i) begin
+        $display($realtime, ":\tLSU st req sent. st-%d\t@ 0x%x\tfenced:%d\trob_index:%d\trd_addr:%d\tdata:%x", 
+            lsu_l1d_st_req_opcode_o, lsu_l1d_st_req_paddr_o, lsu_l1d_st_req_is_fence_o, 
+            lsu_l1d_st_req_rob_index_o, lsu_l1d_st_req_rd_addr_o, lsu_l1d_st_req_data_o
+        );
+    end 
 `endif // LOG_LV2
+    /* verilator lint_on WIDTH */
 end
 `endif //LOG_LV1
 // always @(negedge clk) begin

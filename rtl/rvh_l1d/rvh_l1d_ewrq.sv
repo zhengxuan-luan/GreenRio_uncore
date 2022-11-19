@@ -9,6 +9,7 @@
 `include "./include/uop_encoding_pkg.sv"
 `endif //USE_VERILATOR
 /* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off WIDTH */
 module rvh_l1d_ewrq
   import rvh_pkg::*;
   // import uop_encoding_pkg::*;
@@ -278,4 +279,5 @@ module rvh_l1d_ewrq
   end
 
 endmodule
+/* verilator lint_on WIDTH */
 /* verilator lint_on PINCONNECTEMPTY */

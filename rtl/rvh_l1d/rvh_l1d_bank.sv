@@ -5,6 +5,7 @@
 `include "./include/uop_encoding_pkg.sv"
 `endif //USE_VERILATOR
 /* verilator lint_off PINCONNECTEMPTY */
+/* verilator lint_off WIDTH */
 module rvh_l1d_bank
     import riscv_pkg::*;
     import rvh_pkg::*;
@@ -1412,6 +1413,7 @@ rvh_l1d_ewrq #(.BANK_ID(BANK_ID)) EWRQ(
 //       4. lsu store, lr, amo s0: given idx, read all way state
 //       4. snoop ctrl s1: given idx, read alla way state
 
+/* verilator lint_off VARHIDDEN */
 always_comb begin
   s2_tag_compare_hit_way_idx = '0;
   for(int i = 0; i < L1D_BANK_WAY_NUM; i++) begin
@@ -1420,6 +1422,7 @@ always_comb begin
       end
   end
 end
+/* verilator lint_on VARHIDDEN */
 
 assign lst_mesi_wr_en_s0_req_vld  =  refill_hsk         |  // mlfb refill
                                      s2_st_req_tag_hit  |  // lsu store s2
@@ -1763,5 +1766,6 @@ std_dffe #(.WIDTH($bits(l1d_pipe_s2_t))) U_STG_DAT_REG_S2 (.clk(clk),.en(s2_nxt_
 
 
 endmodule : rvh_l1d_bank
+/* verilator lint_on WIDTH */
 /* verilator lint_on PINCONNECTEMPTY */
 

@@ -29,8 +29,10 @@ private:
     axi_w_req _w_req;
 
     bool _r_vld = 0;
+    bool _r_rdy = 0;
     axi_r_resp _r_resp;
     bool _b_vld = 0;
+    bool _b_rdy = 0;
     axi_b_resp _b_resp;
 public:
     FakeMemory(std::string pagetable_mem){
@@ -63,15 +65,7 @@ public:
             // }
             _pagetable[i++] = tmp;
         }
-    //     for(int i = 0; i < 25; i ++){
-    //         printf("pagetable:\n");
-    //         uint64_t entry = 0;
-    //         for(int j = 0; j < 8; j ++ ){
-    //             entry += _pagetable[i*8 + j] << (8 * j);
-    //         }
-    //         std::cout << std::hex << entry << std::endl;
-    //     }
-    // }
+    }
     ~FakeMemory(){
         delete _req_q;
         delete _resp_q;
@@ -90,12 +84,14 @@ public:
     void w_vld(const bool& vld);
     void w_req(const axi_w_req& w);
 
+    void b_rdy(const bool & rdy);
+    void r_rdy(const bool & rdy);
+
     bool r_vld() const;
     axi_r_resp r_resp() const;
     bool b_vld() const;
     axi_b_resp b_resp() const;
 
-    uint64_t check(const uint16_t& index);
     uint64_t visit_time() const;
 
     void eval();

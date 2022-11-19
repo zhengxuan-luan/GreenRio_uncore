@@ -19,7 +19,9 @@
 const uint32_t MEM_CHEKCPOINT = 100;
 
 const std::string PROJ_ROOT = std::getenv("PROJ_ROOT");
-const std::string LOG_PATH = PROJ_ROOT + "/sim/lsu_ut/logs/lsu_ut.log";
+const std::string LOG_PATH = PROJ_ROOT + "/dv/l1d/logs/lsu_ut.log";
+const std::string WAVE_PATH = PROJ_ROOT + "/dv/l1d/waves/l1d.vcd";
+const std::string PAGETABLE_PATH = PROJ_ROOT + "/dv/l1d/pagetable";
 
 extern std::ofstream LOG;
 extern uint64_t TIME;
@@ -68,6 +70,9 @@ public:
     bool is_fenced = 0;
     bool load_or_store = 0;
     uint8_t opcode = 0;
+    bool awake = 0;
+    bool issued = 0;
+    bool done = 0;
     Req(){}
     Req(const uint64_t& pa, const uint64_t& d, const uint8_t& ri, 
         const uint8_t& rd, const uint16_t& de, const bool& fence, const bool& ls, const uint8_t& op): 
