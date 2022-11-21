@@ -1,3 +1,0 @@
-[submodule "tools/pico"]
-	path = tools/pico
-	url = git@gitlab.com:series-han/development/pico.git

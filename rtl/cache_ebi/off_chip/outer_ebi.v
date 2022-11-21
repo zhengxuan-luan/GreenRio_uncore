@@ -122,6 +122,24 @@ reg asking;
 reg next_asking;
 reg release_signal;
 reg next_release_signal;
+reg wait_trx_idle_toswitch;
+reg next_wait_trx_idle_toswitch;
+reg [3:0] switching_counter;// 要空闲一定时间才会转换
+reg snp_buffer_valid;
+
+always@(posedge clk) begin
+    if(rst) begin
+        switching_counter <= 4'b0;
+    end else begin
+        if((current_bus_occupy == RELEASE_BUS) && (trx_current_state == IDLE) && snp_buffer_valid) begin
+            if(switching_counter < 4'hf) begin
+                switching_counter <= switching_counter + 4'b1;
+            end
+        end else begin
+            switching_counter <= 4'b0;
+        end
+    end
+end
 
 always@(*) begin
     next_bus_occupy = current_bus_occupy;
@@ -129,6 +147,7 @@ always@(*) begin
     next_bus_switch_o = bus_switch_o;
     next_asking = asking;
     next_release_signal = release_signal;
+    next_wait_trx_idle_toswitch = wait_trx_idle_toswitch;
     if (current_bus_occupy == RELEASE_BUS) begin
         if (asking) begin
             next_bus_switch_oen = 1'b1; // asking拉高后的第一个cycle 已经将请求发出, bus_swtich_oen拉高为下下拍
@@ -139,7 +158,7 @@ always@(*) begin
                 next_bus_switch_oen = 1'b1; //成为master要开始监听
             end
         end else begin
-            if (l2_req_if_snvalid_i) begin 
+            if (snp_buffer_valid && (switching_counter == 4'hf)) begin 
                 next_bus_switch_o = 1'b1;
                 next_asking = 1'b1;
             end
@@ -151,10 +170,15 @@ always@(*) begin
             next_release_signal = 1'b0;
             next_bus_occupy = RELEASE_BUS;
         end else begin
-            if (bus_switch_i && (trx_current_state == IDLE) && (!l2_req_if_snvalid_i)) begin  //加上valid条件是因为idle时ready为高,下一拍即将进行transcation处理
+            // if (bus_switch_i && (trx_current_state == IDLE) && (!l2_req_if_arvalid_i) && (!l2_req_if_awvalid_i)) begin  //加上valid条件是因为idle时ready为高,下一拍即将进行transcation处理
+            if (bus_switch_i) begin
+                next_wait_trx_idle_toswitch = 1'b1;  // switch_i只有一拍就会开始监听，所以要记录下来
+            end 
+            if (wait_trx_idle_toswitch && (trx_current_state == IDLE)) begin
                 next_bus_switch_oen = 1'b0;
                 next_bus_switch_o = 1'b1;
                 next_release_signal = 1'b1; 
+                next_wait_trx_idle_toswitch = 1'b0;
             end
         end
     end
@@ -167,12 +191,14 @@ always @(posedge clk) begin
         bus_switch_o <= 1'b0;
         bus_switch_oen <= 1'b0;
         release_signal <= 1'b0;
+        wait_trx_idle_toswitch <= 1'b0;
     end else begin
         current_bus_occupy <= next_bus_occupy;
         bus_switch_o <= next_bus_switch_o;
         bus_switch_oen <= next_bus_switch_oen;
         asking <= next_asking;
         release_signal <= next_release_signal;
+        wait_trx_idle_toswitch <= next_wait_trx_idle_toswitch;
     end
 end
 
@@ -228,7 +254,6 @@ end
 // -----------------------SNP BUFFER FSM----------------------
 localparam SNOOP_BUFFER_LENGTH = EBI_WIDTH + PADDR_WIDTH + EBI_WIDTH + EBI_WIDTH;
 reg [SNOOP_BUFFER_LENGTH-1:0] snp_buffer;
-reg snp_buffer_valid;
 always @(posedge clk) begin
     if(rst) begin
         snp_buffer <= 'b0;
