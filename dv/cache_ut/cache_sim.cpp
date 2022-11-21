@@ -54,7 +54,8 @@ int main(){
     cache_ut->trace(tfp, 0);
     tfp->open("cache_waves.vcd");
     reset();
-    for(int i = 0; i < 200000; i++)
+    int i = 0;
+    for(i = 0; i < 200000; i++)
         cycle();
     if(i == 200000)
         printf("multi-core test pass!!!\n");

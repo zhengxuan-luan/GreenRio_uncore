@@ -8,15 +8,14 @@ SOC_SRC := $(shell find $(SRC_ROOT)/perips -type f -name '*.[v]' ! -name sky130_
 CACHE_SRC := $(shell find $(SRC_ROOT)/cache -type f -name '*.[v]')
 CACHE_SRC += $(shell find $(SRC_ROOT)/cache_ebi -type f -name '*.[v]')
 
-verilator = ~/verilator/bin/verilator
 .PHONY: verify_soc verify_cache
 
 verify_soc:
-	$(verilator) $(VERIFLAGS) $(DV_ROOT)/soc_ut/soc_tb.v $(SOC_SRC) $(DV_ROOT)/soc_ut/soc_sim.cpp
+	verilator $(VERIFLAGS) $(DV_ROOT)/soc_ut/soc_tb.v $(SOC_SRC) $(DV_ROOT)/soc_ut/soc_sim.cpp
 	-build/Vsoc_tb
 
 verify_cache: 
-	$(verilator) $(VERIFLAGS) -top-module cache_utop +define+RUBY --Wno-LATCH --Wno-COMBDLY $(CACHE_SRC)  $(DV_ROOT)/cache_ut/cache_utop.v $(DV_ROOT)/cache_ut/cache_sim.cpp
+	verilator $(VERIFLAGS) -top-module cache_utop +define+RUBY --Wno-LATCH --Wno-COMBDLY $(CACHE_SRC)  $(DV_ROOT)/cache_ut/cache_utop.v $(DV_ROOT)/cache_ut/cache_sim.cpp
 	-build/Vcache_utop
 
 soc_waves:
