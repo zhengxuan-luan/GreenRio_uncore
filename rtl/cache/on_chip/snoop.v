@@ -192,8 +192,8 @@ module snoop (
 					if (sn_peek_tram_resp_save[i * 12+:12] == sn_req_save[17:6])
 						ok = 1'b1;
 			end
-			if ((((ok == 1'b0) & ~mlfb_hit) & ~ewrq_hit) & ~mshr_hit)
-				$finish;
+			// if ((((ok == 1'b0) & ~mlfb_hit) & ~ewrq_hit) & ~mshr_hit)
+				// $finish;
 		end
 	end
 	always @(*) begin

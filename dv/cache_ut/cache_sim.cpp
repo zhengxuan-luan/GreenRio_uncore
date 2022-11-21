@@ -56,6 +56,8 @@ int main(){
     reset();
     for(int i = 0; i < 200000; i++)
         cycle();
+    if(i == 200000)
+        printf("multi-core test pass!!!\n");
     cache_ut->final();
     delete cache_ut;
     tfp->close();
